@@ -1,0 +1,27 @@
+# History and Environment files
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+
+# RStudio files
+.Rproj.user/
+
+# Windows thumbnail and desktop files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS files
+.DS_Store
+
+# Editor / IDE settings
+.vscode/
+.idea/
+
+# Temporary test logs or runtime dumps
+*.log
+scratch/
+test_calc.R
+validate_app.R
