@@ -23,5 +23,5 @@ $RECYCLE.BIN/
 # Temporary test logs or runtime dumps
 *.log
 scratch/
-test_calc.R
-validate_app.R
+test_*.R
+
