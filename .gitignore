@@ -24,4 +24,11 @@ $RECYCLE.BIN/
 *.log
 scratch/
 test_*.R
+*.pdf
 
+# Dynamic runtime exports
+*.png
+*_transformed_data_all_*.csv
+*_scatter_plot_*.png
+*_scree_plot_*.png
+*_discriminant_variance_*.png

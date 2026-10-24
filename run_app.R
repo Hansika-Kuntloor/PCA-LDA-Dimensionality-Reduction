@@ -1,6 +1,7 @@
 # ==============================================================================
-# Quick Launcher for PCA & LDA Explorer
-# Run in terminal or R: Rscript run_app.R
+# Quick Launcher for Feature Extraction Studio
+# Run in terminal or PowerShell: Rscript run_app.R
+# Or in Windows: & "C:\Program Files\R\R-4.6.1\bin\Rscript.exe" run_app.R
 # ==============================================================================
 
 required_packages <- c("shiny", "ggplot2", "MASS", "rattle.data", "DT")
@@ -11,5 +12,5 @@ if (length(missing_packages) > 0) {
   install.packages(missing_packages, repos = "https://cloud.r-project.org")
 }
 
-cat("Launching PCA & LDA Explorer in your default web browser...\n")
+cat("Launching Feature Extraction Studio in your default web browser...\n")
 shiny::runApp(".", launch.browser = TRUE)

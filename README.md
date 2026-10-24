@@ -1,64 +1,84 @@
-# 🍷 Feature Extraction (Dimensionality Reduction) Using PCA and LDA
+# 🍷 Feature Extraction Studio — PCA and LDA on the Wine Dataset
 
-An academic **R Shiny** application for feature extraction and dimensionality reduction on the Wine dataset using **Principal Component Analysis (PCA)** and **Linear Discriminant Analysis (LDA)** with a strict, leak-free **70:30 stratified train-test split**.
+An academic **R Shiny** application for feature extraction and dimensionality reduction on the Wine dataset using **Principal Component Analysis (PCA)** and **Linear Discriminant Analysis (LDA)** with a strict, leak-free **70:30 stratified train-test split** (reproducible seed `42`).
 
----
-
-## 📌 Project Overview
-
-This application provides a clean, academic interface focused on the core steps of feature extraction:
-
-* **Three Core Sections**:
-  1. **Dataset**: Introduction to the Wine dataset, chemical features description, and full interactive dataset table with split tags.
-  2. **PCA**: Unsupervised linear feature extraction with beginner-friendly explanations and a PC1 vs PC2 scatter plot.
-  3. **LDA**: Supervised linear feature extraction with beginner-friendly explanations and an LD1 vs LD2 scatter plot.
-* **Strict 70:30 Stratified Split**: Exactly 70% of the dataset (125 samples) is used for training and 30% (53 samples) is held out for testing (`set.seed(42)`):
-  * **Cultivar 1**: 41 Training / 18 Testing (59 total)
-  * **Cultivar 2**: 50 Training / 21 Testing (71 total)
-  * **Cultivar 3**: 34 Training / 14 Testing (48 total)
-* **Zero Data Leakage**: Standardization parameters ($\mu$ and $\sigma$) are estimated **exclusively on the training partition**. Test features are transformed using the training-set parameters.
-* **No Test Refitting**: PCA rotation eigenvectors and LDA discriminant functions are fitted **solely on the training partition**. Test observations are projected onto the learned axes without refitting.
+Built with a minimal, modern white-and-sky-blue design system, the application operates as a focused single-page studio dashboard with real-time feature selection, standardization settings, optional CSV uploads, circular variance gauges, feature loading contributions, PCA-exclusive scree plots, and full CSV exports.
 
 ---
 
-## 🚀 Application Sections
+## 📌 Architecture & Design Overview
 
-### 1. 📊 Dataset
-* Academic introduction to the Wine dataset (178 samples from 3 Italian wine cultivars).
-* Description table of the 13 continuous chemical constituents.
-* Concise sample count breakdown across training (125) and testing (53) partitions.
-* Interactive, paginated data table showing cultivar labels, partition assignment, and rounded chemical values.
-* Download full dataset as CSV.
+### 1. Minimal White & Sky Blue Design
+* **Header**: Title **“Feature Extraction Studio”** with subtitle **“PCA and LDA on the Wine Dataset”** and a compact dataset badge.
+* **Focused Dashboard**: Completely removes separate Dataset and Compare navigation tabs, presenting all analysis controls, visualizations, metrics, and transformed data in one cohesive view.
+* **Palette**: Minimal white cards (`#ffffff`), very light sky-blue surfaces (`#f4f8fd`), dark navy text (`#0f2744`), and dedicated cultivar accents:
+  * **Cultivar 1**: Royal Blue (`#2563eb`)
+  * **Cultivar 2**: Warm Orange (`#f97316`)
+  * **Cultivar 3**: Vibrant Purple (`#9333ea`)
+* **Partition Shapes**:
+  * **● Circles** (`shape = 21`): 70% Training partition (125 observations)
+  * **▲ Triangles** (`shape = 24`): 30% Testing partition (53 observations)
 
-### 2. 🔍 PCA (Unsupervised)
-* Beginner-friendly academic explanation of variance maximization and orthogonality.
-* Fitted strictly on the 125 standardized training observations without class labels.
-* Variance explained: PC1 (**37.00%**), PC2 (**20.12%**), Cumulative (**57.12%**).
-* Clean **PC1 vs PC2 scatter plot** with:
-  * Observations colored by cultivar class.
-  * Observations shaped by partition: **● Circles** = Training (70%), **▲ Triangles** = Testing (30%).
-  * 95% confidence ellipses.
-* Export scatter plot as high-resolution PNG (300 DPI) and PCA scores as CSV.
+### 2. Left Control Panel
+* **Method Selector**: Segmented toggle buttons (`PCA` vs `LDA`) that update all plots, metrics, gauges, and data previews.
+* **Dataset Information**: Compact label showing dataset name, sample count (178), numerical feature count (13), and class count (3).
+* **Optional CSV Upload**: Compact `Upload CSV` button. Loads the Wine Recognition dataset automatically by default (uploading is never required). Validates uploaded files, ensures a class-label column exists for LDA, and provides a quick reset link back to the Wine dataset.
+* **Feature Selection**: Scrollable list of numeric feature checkboxes with working **Select All** and **Deselect All** controls.
+* **Standardization Setting**: Checkbox toggle to enable/disable Z-score standardization ($\mu=0, \sigma=1$) using training-only statistics.
+* **Fixed 70:30 Train-Test Split**: Visual two-tone progress bar (70% deep blue, 30% light blue) showing **125 Training** / **53 Testing** samples with seed `42`.
+* **Run Analysis Button**: Primary blue action button (`▶ Run Analysis`) recalculating models and updating views.
 
-### 3. 🎯 LDA (Supervised)
-* Beginner-friendly academic explanation of Fisher's discriminant criterion ($S_B / S_W$).
-* Fitted strictly on the 125 training observations with cultivar labels.
-* Trace explained: LD1 (**70.29%**), LD2 (**29.71%**), exhausting 100% of the 2D discriminant space ($\min(13, 3-1) = 2$).
-* Clean **LD1 vs LD2 scatter plot** showing distinct class separation between cultivars.
-* Export scatter plot as high-resolution PNG (300 DPI) and LDA scores as CSV.
+### 3. Center Analytics Panel
+* **Main Scatter Plot**:
+  * **PCA**: PC1 vs PC2 scatter plot with variance explained labels on both axes and 95% shaded confidence ellipses.
+  * **LDA**: LD1 vs LD2 scatter plot with between-class trace proportion labels on both axes.
+* **Secondary Visualization (Directly Below Scatter Plot)**:
+  * **PCA Mode**: Displays the **PCA Scree Plot** showing explained variance ratios for every principal component with numerical values labeled above points.
+  * **LDA Mode**: Displays the **LDA Discriminant Variance Bar Chart** showing separate bars for LD1 (70.29%) and LD2 (29.71%) reflecting the actual between-class discriminant variance proportions.
+
+### 4. Right Metrics & Feature Contributions Panel
+* **Explained Variance (PCA) / Discriminant Variance (LDA)**:
+  * High-resolution SVG circular donut gauges for Component 1, Component 2, and Combined (Component 1 + Component 2).
+  * Shows total variance explained for PCA (PC1: 37.00%, PC2: 20.12%, Combined: 57.12%) and between-class trace for LDA (LD1: 70.29%, LD2: 29.71%, Combined: 100%).
+* **Feature Contributions**:
+  * Single dedicated panel with a dynamic dropdown to select **PC1/PC2** (for PCA) or **LD1/LD2** (for LDA).
+  * Horizontal gradient bars (`#38bdf8` to `#2563eb`) displaying relative absolute loadings $|w_j|$ or scaling coefficients $|c_j|$ with exact numerical values.
+
+### 5. Bottom Transformed Data Preview
+* **Preview Table**: First 5 rows of projected scores with colored badges for Class and Train/Test partition.
+* **CSV Export**: `Download CSV` button exporting all 178 transformed observations (or all rows if custom data is loaded).
 
 ---
 
-## 📊 Summary of Model Findings (70:30 Split)
+## 🔬 Statistical Methodology (Zero Data Leakage)
+
+1. **Stratified Split**: 
+   The dataset is split once using `set.seed(42)` into 70% training (125 samples) and 30% testing (53 samples) in a stratified manner across the three cultivars:
+   * **Cultivar 1**: 41 Train / 18 Test (59 total)
+   * **Cultivar 2**: 50 Train / 21 Test (71 total)
+   * **Cultivar 3**: 34 Train / 14 Test (48 total)
+2. **Training-Set-Only Preprocessing**:
+   Feature means ($\mu_{\text{train}}$) and standard deviations ($\sigma_{\text{train}}$) are computed **strictly on the 125 training observations**. The held-out 53 test observations are standardized using training parameters.
+3. **Unsupervised PCA Fitting**:
+   Fitted strictly on the training partition without class labels. Test observations are projected via matrix multiplication with the training rotation eigenvectors ($V_{\text{train}}$):
+   $$Z_{\text{test}} = X_{\text{test, scaled}} \, V_{\text{train}}$$
+4. **Supervised LDA Fitting**:
+   Fitted strictly on the training partition using cultivar labels. Test observations are projected onto the learned linear discriminants without refitting.
+
+---
+
+## 📊 Summary of Baseline Model Findings (All 13 Features)
 
 | Property / Metric | PCA (Unsupervised) | LDA (Supervised) |
 | :--- | :--- | :--- |
 | **Learning Paradigm** | Unsupervised (no class labels) | Supervised (uses cultivar labels) |
-| **Optimization Goal** | Maximize total feature variance | Maximize between-class separation |
-| **Training Partition (70%)** | 125 samples | 125 samples |
-| **Testing Partition (30%)** | 53 samples | 53 samples |
-| **2D Representation** | PC1 + PC2 (57.12% variance) | LD1 + LD2 (100% trace) |
-| **Scatter Separation** | Partial cluster overlap (Cultivars 1 & 2) | Distinct, linearly separated clusters |
+| **Optimization Target** | Maximize total feature variance | Maximize between-to-within variance ratio ($S_B / S_W$) |
+| **Training Partition (70%)** | 125 observations | 125 observations |
+| **Testing Partition (30%)** | 53 observations | 53 observations |
+| **Component 1** | PC1 explains **37.00%** of variance | LD1 accounts for **70.29%** of between-class trace |
+| **Component 2** | PC2 explains **20.12%** of variance | LD2 accounts for **29.71%** of between-class trace |
+| **Cumulative 2D Representation** | **57.12%** total variance retained | **100.0%** between-class space captured ($\min(13, 3-1)=2$) |
+| **Out-of-Sample LDA Test Accuracy** | N/A (Descriptive feature extraction) | **98.11%** (52 of 53 held-out test samples correctly classified) |
 
 ---
 
@@ -66,66 +86,36 @@ This application provides a clean, academic interface focused on the core steps 
 
 ```text
 PCA-LDA-Dimensionality-Reduction/
-├── app.R              # Clean R Shiny application (Dataset, PCA, LDA sections)
-├── run_app.R          # One-click launch script with automated dependency check
-├── validate_app.R     # Assertion script verifying 70:30 split and mathematical integrity
+├── app.R              # Complete R Shiny Feature Extraction Studio
+├── run_app.R          # One-click startup script with automated dependency installer
+├── validate_app.R     # Validation suite testing 70:30 split, standardization, and dynamic models
 ├── .gitignore         # Git ignore rules for R, RStudio, and Windows
-└── README.md          # Academic documentation and setup guide
+└── README.md          # Complete project documentation and methodology
 ```
 
 ---
 
-## 🛠️ Windows Setup & Launch Instructions
+## 🛠️ Run Instructions
 
-### Prerequisites
-* **R (version 4.0 or later)**: Installed on Windows ([CRAN](https://cran.r-project.org/bin/windows/base/)).
+### Option 1: Quick Launch via PowerShell / Terminal
+```powershell
+cd C:\Users\HaniS\OneDrive\Desktop\PCA-LDA-Dimensionality-Reduction
+& "C:\Program Files\R\R-4.6.1\bin\Rscript.exe" run_app.R
+```
+*(Or simply `Rscript run_app.R` if `Rscript` is on your system PATH).*
 
-### Option 1: Quick Launch via Terminal / PowerShell
-1. Open PowerShell or Command Prompt.
-2. Navigate to the project root:
-   ```powershell
-   cd C:\Users\HaniS\OneDrive\Desktop\PCA-LDA-Dimensionality-Reduction
-   ```
-3. Run the launcher script:
-   ```powershell
-   & "C:\Program Files\R\R-4.6.1\bin\Rscript.exe" run_app.R
-   ```
-   *(Or simply `Rscript run_app.R` if R is on your system PATH)*.
-
-### Option 2: Launch from R or RStudio
+### Option 2: Launch within R / RStudio
 ```r
 setwd("C:/Users/HaniS/OneDrive/Desktop/PCA-LDA-Dimensionality-Reduction")
-shiny::runApp()
+shiny::runApp(launch.browser = TRUE)
 ```
 
-### Option 3: Run Automated Verification Tests
-To verify the 70:30 split, zero leakage assertions, and model integrity:
+### Option 3: Run the Verification Suite
 ```powershell
 & "C:\Program Files\R\R-4.6.1\bin\Rscript.exe" validate_app.R
 ```
 
 ---
 
-## 📦 Required Packages
-
-* `shiny`
-* `ggplot2`
-* `MASS`
-* `rattle.data`
-* `DT`
-
-To install missing packages in R:
-```r
-install.packages(c("shiny", "ggplot2", "MASS", "rattle.data", "DT"), repos = "https://cloud.r-project.org")
-```
-
----
-
-## 📜 Dataset Citation
-* **Source**: Forina, M. et al., PARVUS - An Extendible Package for Data Exploration, Classification and Correlation. Institute of Pharmaceutical and Food Analysis and Technologies, Genoa, Italy.
-* Available via `rattle.data::wine` and the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/wine).
-
----
-
 ## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source and licensed under the [MIT License](LICENSE).
