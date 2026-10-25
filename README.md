@@ -44,26 +44,39 @@ The application is structured into **Three Dedicated Main Navigation Tabs**:
 
 ---
 
-### 3. Tab 2 — Insights
-Dynamically displays supporting visualisations according to the active method:
+### 3. Tab 2 — Insights (Balanced Three-Column Layout for PCA & LDA)
+Dynamically displays supporting visualisations organized into three balanced desktop columns with unified typography, unclipped labels, and headroom-optimized chart plotting:
 
-#### A. When PCA is Selected:
-* **Explained Variance Summary**: Metric chips for PC1 (37.00%), PC2 (20.12%), and Combined 2D (57.12%), plus a compact table with Component, Explained Variance (%), and Cumulative Variance (%).
-* **PCA Scree Plot**: Clean `#315DEB` blue bar chart showing explained variance percentages across principal components without any connecting line or curve.
-* **Restored PCA Feature Contributions**:
+#### A. When PCA is Selected (Three-Column Desktop Layout):
+* **Column 1 — Explained Variance Summary & Table (`width = 4`)**:
+  * 2+1 grid chips for PC1 Variance (37.00%), PC2 Variance (20.12%), and Combined 2D (57.12% Total Variance).
+  * Clean, readable variance table with Component, Explained Variance (%), and Cumulative Variance (%) in a smooth scroll wrapper.
+* **Column 2 — PCA Feature Contributions (`width = 4`)**:
   * Dropdown selector for principal components (`PC1` through `PC13`).
-  * Unclipped feature names aligned neatly on the left (`155px` width).
-  * Horizontal bar tracks: **Blue (`#315DEB`)** for positive eigenvector loadings, **Rose Pink (`#E64980`)** for negative eigenvector loadings.
-  * Right-aligned signed numerical values (e.g. `+0.428`, `-0.312`) in monospace font.
-  * Sorted automatically by absolute loading magnitude, largest first.
-  * Caption: *"Blue = positive · Pink = negative · Sorted by magnitude"*.
+  * Generous 140px unclipped feature names, proportional bar tracks, and signed numerical values (`+0.428`, `-0.312`).
+  * **Blue (`#315DEB`)** for positive eigenvector loadings, **Rose Pink (`#E64980`)** for negative loadings.
+  * Sorted automatically by absolute magnitude with scrollable wrapper.
+* **Column 3 — PCA Scree Plot (`width = 4`)**:
+  * Clean `#315DEB` blue bar chart showing explained variance percentages without connecting curves.
+  * Uncluttered, rotated component tick labels (35°) preventing any overlap between PC1 and PC13.
+  * X-axis: "Principal Component", Y-axis: "Explained Variance (%)" with collision-free margins.
+  * Headroom expansion ensuring percentage labels above bars remain safely within plotting boundaries.
+  * `Save PNG` export button.
 
-#### B. When LDA is Selected (Clean, Balanced 6/6 Layout):
-* **LDA Discriminant Variance Chart & Fisher Context**: Summary chips for LD1 (70.29%), LD2 (29.71%), and Total Between-Class Trace (100.00%), plus clean blue bars and an explanatory box detailing Fisher's criterion ($S_B / S_W$) and 98.11% out-of-sample test accuracy (the duplicate scatter plot has been removed from Insights since the primary projection is always available in Analysis).
-* **Restored LDA Feature Contributions**:
+#### B. When LDA is Selected (Three-Column Desktop Layout):
+* **Column 1 — Discriminant Variance Summary & Trace Table (`width = 4`)**:
+  * 2+1 grid chips for LD1 Trace (70.29%), LD2 Trace (29.71%), and Total Between-Class Trace (100.00%).
+  * Clean discriminant table showing LD1/LD2 trace proportions and cumulative trace.
+  * Held-out test accuracy summary: **98.11%** (52 of 53 test observations correctly classified with zero data leakage).
+* **Column 2 — LDA Feature Contributions (`width = 4`)**:
   * Dropdown selector for discriminant functions (`LD1` / `LD2`).
-  * Horizontal bar layout matching PCA, with blue positive and pink negative coefficients.
-  * Labeled explicitly as linear discriminant scaling coefficients (not percentages).
+  * 140px unclipped feature names, horizontal bar tracks, and signed linear discriminant scaling coefficients.
+  * Same color-coding: Blue (`#315DEB`) for positive, Rose Pink (`#E64980`) for negative, sorted by absolute magnitude.
+* **Column 3 — LDA Discriminant Variance Chart & Fisher Context (`width = 4`)**:
+  * Clean `#315DEB` blue bar chart for LD1 and LD2 with readable tick labels and ample headroom for percentage labels.
+  * X-axis: "Linear Discriminant Function", Y-axis: "Between-Class Variance (%)".
+  * Explanatory context box detailing Fisher's criterion ($S_B / S_W$) and 100% between-class discriminant space capture.
+  * `Save PNG` export button.
 
 ---
 

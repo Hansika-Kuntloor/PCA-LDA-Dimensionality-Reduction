@@ -333,27 +333,52 @@ ui <- fluidPage(
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        min-height: 38px;
       }
       .card-title-group {
         display: flex;
         align-items: center;
         gap: 8px;
+        flex: 1;
+        min-width: 0;
       }
       .card-icon {
         color: #315DEB;
-        font-size: 15px;
+        font-size: 16px;
       }
       .card-main-title {
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 700;
         color: #0F172A;
         margin: 0;
+        line-height: 1.3;
       }
       .card-subtitle {
-        font-size: 11.5px;
+        font-size: 12px;
         color: #64748B;
-        margin: 1px 0 0 0;
+        margin: 2px 0 0 0;
+        line-height: 1.3;
+      }
+      .card-header-select {
+        margin-left: 10px;
+        flex-shrink: 0;
+      }
+      .card-header-select .form-group,
+      .card-header-select .shiny-input-container {
+        margin-bottom: 0 !important;
+      }
+      .card-header-select select.form-control,
+      .card-header-select .selectize-input {
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        border-radius: 6px !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+        line-height: 1.4 !important;
       }
       
       /* Segmented Method Selector */
@@ -690,7 +715,7 @@ ui <- fluidPage(
       /* RESTORED CLEAN FEATURE CONTRIBUTION CHART STYLING */
       .feature-contrib-list {
         padding: 2px 0;
-        max-height: 480px;
+        max-height: 365px;
         overflow-y: auto;
       }
       .feature-contrib-list::-webkit-scrollbar {
@@ -703,21 +728,27 @@ ui <- fluidPage(
       .feature-contrib-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 8px;
+        height: 22px;
+        min-height: 22px;
+        gap: 10px;
+        margin-bottom: 5px;
       }
       .contrib-name {
-        width: 155px;
-        min-width: 155px;
-        font-size: 12.5px;
+        width: 140px;
+        min-width: 140px;
+        max-width: 140px;
+        flex-shrink: 0;
+        font-size: 12px;
         font-weight: 500;
         color: #1E293B;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 22px;
       }
       .contrib-bar-track {
-        flex-grow: 1;
+        flex: 1 1 auto;
+        min-width: 50px;
         height: 9px;
         background: #F1F5F9;
         border-radius: 5px;
@@ -726,41 +757,125 @@ ui <- fluidPage(
       .contrib-bar-fill {
         height: 100%;
         border-radius: 5px;
-        transition: width 0.3s ease;
+        transition: width 0.25s ease;
       }
       .contrib-val {
-        width: 55px;
-        min-width: 55px;
+        width: 54px;
+        min-width: 54px;
+        max-width: 54px;
+        flex-shrink: 0;
         font-size: 12px;
         font-weight: 700;
         text-align: right;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        line-height: 22px;
+        font-variant-numeric: tabular-nums;
       }
       
-      /* Metric Chips Row */
-      .metric-chips-row {
-        display: flex;
-        flex-wrap: wrap;
+      /* Table Scroll Wrap & Clean Styling */
+      .table-scroll-wrap {
+        max-height: 295px;
+        overflow-y: auto;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        background: #FFFFFF;
+      }
+      .table-scroll-wrap::-webkit-scrollbar {
+        width: 5px;
+      }
+      .table-scroll-wrap::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+      }
+      .table-scroll-wrap .clean-table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #F8FAFC;
+        box-shadow: 0 1px 0 #E2E8F0;
+      }
+      
+      /* Balanced 3-Column Layout for Desktop & Responsive Stacking */
+      @media (min-width: 992px) {
+        .insights-three-col {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 16px !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          align-items: start !important;
+        }
+        .insights-three-col::before,
+        .insights-three-col::after {
+          display: none !important;
+        }
+        .insights-three-col > [class*='col-'] {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .insights-three-col .studio-card {
+          flex: 1 1 auto !important;
+          margin-bottom: 0 !important;
+          min-height: 480px;
+        }
+      }
+      @media (max-width: 991px) {
+        .insights-three-col {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 16px !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+        .insights-three-col::before,
+        .insights-three-col::after {
+          display: none !important;
+        }
+        .insights-three-col > [class*='col-'] {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          margin-bottom: 0 !important;
+        }
+        .insights-three-col .studio-card {
+          min-height: auto !important;
+          margin-bottom: 0 !important;
+        }
+      }
+      
+      /* Metric Chips Grid (2-on-top, 1-spanning-bottom) */
+      .metric-chips-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 8px;
         margin-bottom: 12px;
       }
       .metric-chip {
-        flex: 1;
-        min-width: 110px;
         background: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
-        padding: 8px 12px;
+        padding: 7px 10px;
         display: flex;
         flex-direction: column;
         gap: 2px;
+      }
+      .metric-chip-full {
+        grid-column: span 2;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
       }
       .metric-chip-primary {
         background: #EFF4FF;
         border-color: #C7D7FE;
       }
       .metric-chip-label {
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 600;
         color: #64748B;
       }
@@ -768,7 +883,7 @@ ui <- fluidPage(
         color: #315DEB;
       }
       .metric-chip-val {
-        font-size: 16px;
+        font-size: 15.5px;
         font-weight: 700;
         color: #0F172A;
       }
@@ -1138,13 +1253,12 @@ ui <- fluidPage(
       # ========================================================================
       div(class = "tab-pane", id = "tab-insights",
         
-        # --- A. When PCA is selected ---
+        # --- A. When PCA is selected (Balanced 3-Column Layout) ---
         conditionalPanel(
           condition = "input.method == 'pca'",
-          fluidRow(
-            # Left: Explained Variance Summary & Scree Plot (width = 5)
-            column(width = 5,
-              # Explained Variance Summary Card
+          fluidRow(class = "insights-three-col",
+            # Column 1: Explained Variance Summary & Table (width = 4)
+            column(width = 4,
               div(class = "studio-card",
                 div(class = "card-header-flex",
                   div(class = "card-title-group",
@@ -1157,9 +1271,33 @@ ui <- fluidPage(
                 ),
                 uiOutput("ui_pca_variance_stats"),
                 uiOutput("table_pca_variance")
-              ),
-              
-              # Scree Plot Card (Simple Blue Bars, No Curve)
+              )
+            ),
+            
+            # Column 2: PCA Feature Contributions (width = 4)
+            column(width = 4,
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("❄")),
+                    div(
+                      h4(class = "card-main-title", "PCA Feature Contributions"),
+                      p(class = "card-subtitle", "Eigenvector loadings for selected component")
+                    )
+                  ),
+                  div(class = "card-header-select", style = "width: 100px;",
+                    selectInput("pca_contrib_comp", label = NULL, choices = paste0("PC", 1:13), selected = "PC1")
+                  )
+                ),
+                div(class = "info-tag", "Blue = positive · Pink = negative · Sorted by magnitude"),
+                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 8px 0; line-height: 1.35;",
+                  "Loadings represent feature coefficients in the principal component eigenvector. Sorted by absolute magnitude."),
+                uiOutput("ui_pca_feature_contributions")
+              )
+            ),
+            
+            # Column 3: PCA Scree Plot (width = 4)
+            column(width = 4,
               div(class = "studio-card",
                 div(class = "card-header-flex",
                   div(class = "card-title-group",
@@ -1171,83 +1309,73 @@ ui <- fluidPage(
                   ),
                   downloadButton("download_scree_png", "Save PNG", class = "btn-export")
                 ),
-                plotOutput("plot_scree", height = "230px")
-              )
-            ),
-            
-            # Right: Restored PCA Feature Contributions (width = 7)
-            column(width = 7,
-              div(class = "studio-card",
-                div(class = "card-header-flex",
-                  div(class = "card-title-group",
-                    span(class = "card-icon", HTML("❄")),
-                    div(
-                      h4(class = "card-main-title", "PCA Feature Contributions"),
-                      p(class = "card-subtitle", "Eigenvector loadings for the selected principal component")
-                    )
-                  ),
-                  div(style = "width: 95px;",
-                    selectInput("pca_contrib_comp", label = NULL, choices = paste0("PC", 1:13), selected = "PC1")
-                  )
-                ),
-                div(class = "info-tag", "Blue = positive · Pink = negative · Sorted by magnitude"),
-                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 10px 0; line-height: 1.4;",
-                  "Loadings represent feature coefficients in the principal component eigenvector. Sorted by absolute magnitude."),
-                uiOutput("ui_pca_feature_contributions")
+                plotOutput("plot_scree", height = "360px")
               )
             )
           )
         ),
         
-        # --- B. When LDA is selected (Duplicate Scatter Plot Removed, Clean Balanced 6/6 Layout) ---
+        # --- B. When LDA is selected (Balanced 3-Column Layout) ---
         conditionalPanel(
           condition = "input.method == 'lda'",
-          fluidRow(
-            # Left: Discriminant Variance Chart (width = 6)
-            column(width = 6,
+          fluidRow(class = "insights-three-col",
+            # Column 1: Discriminant Variance Summary & Trace Table (width = 4)
+            column(width = 4,
               div(class = "studio-card",
                 div(class = "card-header-flex",
                   div(class = "card-title-group",
                     span(class = "card-icon", HTML("❖")),
                     div(
-                      h4(class = "card-main-title", "LDA Discriminant Variance"),
-                      p(class = "card-subtitle", "Relative between-class separation captured by linear discriminants")
+                      h4(class = "card-main-title", "Discriminant Variance Summary (LDA)"),
+                      p(class = "card-subtitle", "Between-class separation captured by linear discriminants")
                     )
-                  ),
-                  downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
+                  )
                 ),
                 uiOutput("ui_lda_variance_stats"),
-                plotOutput("plot_lda_variance", height = "240px"),
-                div(class = "insights-context-box",
-                  strong("Fisher's Criterion: "),
-                  "Linear Discriminant Analysis finds linear combinations of features that maximize the ratio of between-class variance to within-class variance (SB / SW). With 3 distinct cultivars, LDA generates exactly min(p, 3 - 1) = 2 discriminant functions (LD1 and LD2), capturing 100% of the between-class discriminant space.",
-                  tags$div(style = "margin-top: 6px;",
-                    strong("Held-Out Test Accuracy: "),
-                    "98.11% (52 of 53 test observations correctly classified with zero data leakage)."
-                  )
-                )
+                uiOutput("table_lda_variance")
               )
             ),
             
-            # Right: Restored LDA Feature Contributions (width = 6)
-            column(width = 6,
+            # Column 2: LDA Feature Contributions (width = 4)
+            column(width = 4,
               div(class = "studio-card",
                 div(class = "card-header-flex",
                   div(class = "card-title-group",
                     span(class = "card-icon", HTML("❄")),
                     div(
                       h4(class = "card-main-title", "LDA Feature Contributions"),
-                      p(class = "card-subtitle", "Linear discriminant scaling coefficients for the selected axis")
+                      p(class = "card-subtitle", "Linear discriminant scaling coefficients")
                     )
                   ),
-                  div(style = "width: 95px;",
+                  div(class = "card-header-select", style = "width: 100px;",
                     selectInput("lda_contrib_comp", label = NULL, choices = c("LD1" = "LD1", "LD2" = "LD2"), selected = "LD1")
                   )
                 ),
                 div(class = "info-tag", "Blue = positive · Pink = negative · Sorted by magnitude"),
-                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 10px 0; line-height: 1.4;",
-                  "Coefficients indicate each feature's contribution to cultivar separation on this axis. Their magnitude depends on the fitted model and feature standardization."),
+                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 8px 0; line-height: 1.35;",
+                  "Coefficients indicate each feature's contribution to cultivar separation on this axis. Sorted by absolute magnitude."),
                 uiOutput("ui_lda_feature_contributions")
+              )
+            ),
+            
+            # Column 3: LDA Discriminant Variance Chart & Fisher Context (width = 4)
+            column(width = 4,
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("☊")),
+                    div(
+                      h4(class = "card-main-title", "LDA Discriminant Variance"),
+                      p(class = "card-subtitle", "Between-class variance proportion per discriminant function")
+                    )
+                  ),
+                  downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
+                ),
+                plotOutput("plot_lda_variance", height = "240px"),
+                div(class = "insights-context-box", style = "margin-top: 12px;",
+                  strong("Fisher's Criterion: "),
+                  "LDA maximizes between-to-within class variance (SB / SW). With 3 distinct cultivars, LDA generates min(p, 3 - 1) = 2 discriminant functions (LD1 and LD2), capturing 100% of between-class separation."
+                )
               )
             )
           )
@@ -1797,7 +1925,7 @@ server <- function(input, output, session) {
     v2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
     v_tot <- v1 + v2
     
-    div(class = "metric-chips-row",
+    div(class = "metric-chips-grid",
       div(class = "metric-chip",
         span(class = "metric-chip-label", "PC1 Variance:"),
         span(class = "metric-chip-val", sprintf("%.2f%%", v1))
@@ -1806,9 +1934,9 @@ server <- function(input, output, session) {
         span(class = "metric-chip-label", "PC2 Variance:"),
         span(class = "metric-chip-val", sprintf("%.2f%%", v2))
       ),
-      div(class = "metric-chip metric-chip-primary",
-        span(class = "metric-chip-label", "Combined 2D (PC1+PC2):"),
-        span(class = "metric-chip-val", sprintf("%.2f%%", v_tot))
+      div(class = "metric-chip metric-chip-primary metric-chip-full",
+        span(class = "metric-chip-label", "Combined 2D (PC1 + PC2):"),
+        span(class = "metric-chip-val", sprintf("%.2f%% Total Variance", v_tot))
       )
     )
   })
@@ -1829,19 +1957,21 @@ server <- function(input, output, session) {
       )
     })
     
-    tags$table(class = "clean-table",
-      tags$thead(
-        tags$tr(
-          tags$th("Component"),
-          tags$th("Explained Variance"),
-          tags$th("Cumulative Variance")
-        )
-      ),
-      tags$tbody(table_rows)
+    tags$div(class = "table-scroll-wrap",
+      tags$table(class = "clean-table",
+        tags$thead(
+          tags$tr(
+            tags$th("Component"),
+            tags$th("Explained Variance"),
+            tags$th("Cumulative Variance")
+          )
+        ),
+        tags$tbody(table_rows)
+      )
     )
   })
   
-  # Scree Plot (Simple Blue Bars #315DEB, No Curve/Connecting Line)
+  # Scree Plot (Simple Blue Bars #315DEB, No Curve/Connecting Line, Uncluttered Labels)
   build_scree_plot <- function() {
     res <- active_model()
     req(res)
@@ -1856,19 +1986,27 @@ server <- function(input, output, session) {
       Label = ifelse(seq_len(n_comps) <= min(4, n_comps), sprintf("%.1f%%", var_pcts), "")
     )
     
-    y_max <- min(100, max(var_pcts) * 1.25)
-    if (y_max < 20) y_max <- 20
+    y_max <- min(100, max(var_pcts) * 1.30)
+    if (y_max < 25) y_max <- 25
     
     ggplot(scree_df, aes(x = Component, y = Pct)) +
-      geom_col(fill = "#315DEB", width = 0.52, alpha = 0.92) +
-      geom_text(aes(label = Label), vjust = -0.5, size = 3.2, fontface = "bold", color = "#0F172A") +
+      geom_col(fill = "#315DEB", width = 0.56, alpha = 0.95) +
+      geom_text(aes(label = Label), vjust = -0.6, size = 3.5, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         labels = function(x) paste0(x, "%"),
-        expand = expansion(mult = c(0, 0.05))
+        expand = expansion(mult = c(0, 0.08))
       ) +
-      theme_studio(base_size = 11.5) +
-      theme(panel.grid.major.x = element_blank()) +
+      coord_cartesian(clip = "off") +
+      theme_studio(base_size = 12) +
+      theme(
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 35, hjust = 1, vjust = 1, size = 10, face = "bold", color = "#475569"),
+        axis.text.y = element_text(size = 10.5, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 8)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 8)),
+        plot.margin = margin(14, 14, 8, 12)
+      ) +
       labs(x = "Principal Component", y = "Explained Variance (%)")
   }
   
@@ -1936,7 +2074,7 @@ server <- function(input, output, session) {
     v2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
     v_tot <- v1 + v2
     
-    div(class = "metric-chips-row",
+    div(class = "metric-chips-grid",
       div(class = "metric-chip",
         span(class = "metric-chip-label", "LD1 Trace:"),
         span(class = "metric-chip-val", sprintf("%.2f%%", v1))
@@ -1945,9 +2083,45 @@ server <- function(input, output, session) {
         span(class = "metric-chip-label", "LD2 Trace:"),
         span(class = "metric-chip-val", sprintf("%.2f%%", v2))
       ),
-      div(class = "metric-chip metric-chip-primary",
+      div(class = "metric-chip metric-chip-primary metric-chip-full",
         span(class = "metric-chip-label", "Total Between-Class Trace:"),
-        span(class = "metric-chip-val", sprintf("%.2f%%", v_tot))
+        span(class = "metric-chip-val", sprintf("%.2f%% (LD1 + LD2)", v_tot))
+      )
+    )
+  })
+  
+  output$table_lda_variance <- renderUI({
+    res <- active_model()
+    req(res)
+    
+    trace_pcts <- res$lda_trace_pct
+    cum_trace <- cumsum(trace_pcts)
+    n_disc <- length(trace_pcts)
+    
+    table_rows <- lapply(seq_len(n_disc), function(i) {
+      tags$tr(
+        tags$td(strong(paste0("LD", i))),
+        tags$td(sprintf("%.2f%%", trace_pcts[i])),
+        tags$td(sprintf("%.2f%%", cum_trace[i]))
+      )
+    })
+    
+    tagList(
+      tags$div(class = "table-scroll-wrap",
+        tags$table(class = "clean-table",
+          tags$thead(
+            tags$tr(
+              tags$th("Discriminant"),
+              tags$th("Between-Class Trace"),
+              tags$th("Cumulative Trace")
+            )
+          ),
+          tags$tbody(table_rows)
+        )
+      ),
+      div(class = "insights-context-box", style = "margin-top: 10px;",
+        strong("Held-Out Test Accuracy: "),
+        sprintf("%.2f%% (52 of 53 test observations correctly classified with zero data leakage).", res$lda_test_acc)
       )
     )
   })
@@ -1962,7 +2136,7 @@ server <- function(input, output, session) {
         ggplot() +
           annotate("text", x = 0.5, y = 0.5, 
                    label = "Discriminant variance proportions could not be computed for this configuration.",
-                   color = "#64748B", size = 3.8) +
+                   color = "#64748B", size = 4) +
           theme_void() +
           theme(plot.background = element_rect(fill = "#FFFFFF", color = NA))
       )
@@ -1977,22 +2151,31 @@ server <- function(input, output, session) {
       Label = sprintf("%.2f%%", trace_pcts)
     )
     
-    y_max <- max(100, max(trace_pcts) * 1.25)
+    y_max <- min(100, max(trace_pcts) * 1.25)
+    if (y_max < 30) y_max <- 30
     
     ggplot(lda_df, aes(x = Discriminant, y = TracePct)) +
-      geom_col(fill = "#315DEB", width = 0.40, alpha = 0.92) +
-      geom_text(aes(label = Label), vjust = -0.5, size = 3.4, fontface = "bold", color = "#0F172A") +
+      geom_col(fill = "#315DEB", width = 0.45, alpha = 0.95) +
+      geom_text(aes(label = Label), vjust = -0.6, size = 3.8, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         breaks = seq(0, 100, 20),
         labels = function(x) paste0(x, "%"),
-        expand = expansion(mult = c(0, 0.05))
+        expand = expansion(mult = c(0, 0.08))
       ) +
-      theme_studio(base_size = 11.5) +
-      theme(panel.grid.major.x = element_blank()) +
+      coord_cartesian(clip = "off") +
+      theme_studio(base_size = 12) +
+      theme(
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(size = 11, face = "bold", color = "#0F172A"),
+        axis.text.y = element_text(size = 10.5, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 8)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 8)),
+        plot.margin = margin(14, 14, 8, 12)
+      ) +
       labs(
         x = "Linear Discriminant Function",
-        y = "Between-Class Variance Proportion (%)"
+        y = "Between-Class Variance (%)"
       )
   }
   
