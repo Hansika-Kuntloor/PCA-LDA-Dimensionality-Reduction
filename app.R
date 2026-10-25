@@ -1,7 +1,7 @@
 # ==============================================================================
-# Feature Extraction Studio — PCA and LDA on the Wine Dataset
-# Design: Minimal White & Sky Blue Academic Interface (Single-Page Studio)
+# PCA & LDA Feature Extraction Studio
 # Methodology: Strict 70:30 Stratified Train-Test Split (Seed 42, Zero Leakage)
+# UI: Exactly Three Main Navigation Tabs (Analysis, Insights, Overview)
 # ==============================================================================
 
 # --- 1. Load Required Libraries ---
@@ -81,9 +81,9 @@ wine_test  <- wine[test_indices, ]
 
 # Curated palette for cultivars matching reference design
 cultivar_colors_default <- c(
-  "Cultivar 1" = "#2563eb",  # Royal Blue
-  "Cultivar 2" = "#f97316",  # Warm Orange
-  "Cultivar 3" = "#9333ea"   # Vibrant Purple
+  "Cultivar 1" = "#315DEB",  # Cultivar 1: Blue
+  "Cultivar 2" = "#E64980",  # Cultivar 2: Rose pink
+  "Cultivar 3" = "#8055C7"   # Cultivar 3: Muted purple
 )
 
 split_shapes <- c(
@@ -177,7 +177,6 @@ compute_feature_models <- function(selected_keys,
 
 # --- 5. Baseline Global Model (All 13 Features) for Script & Assertion Integrity ---
 baseline_res <- compute_feature_models(feature_keys)
-
 train_means      <- baseline_res$train_means
 train_sds        <- baseline_res$train_sds
 pca_fit          <- baseline_res$pca_fit
@@ -195,11 +194,11 @@ lda_test_acc     <- baseline_res$lda_test_acc
 
 # --- 6. User Interface (UI) Definition ---
 ui <- fluidPage(
-  title = "Feature Extraction Studio — PCA and LDA on the Wine Dataset",
+  title = "PCA & LDA Feature Extraction Studio",
   
   tags$head(
     tags$style(HTML("
-      /* Google Font & Layout Reset */
+      /* Clean Modern Academic Typography & Reset */
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
       
       *, *::before, *::after {
@@ -207,145 +206,164 @@ ui <- fluidPage(
       }
       
       body {
-        background-color: #f4f8fd;
+        background-color: #F7F8FC;
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        color: #1e293b;
+        color: #0F172A;
         margin: 0;
         padding: 0;
-        line-height: 1.5;
+        line-height: 1.45;
         overflow-x: hidden;
       }
       
-      /* Subtle Leaf Background Flourishes */
-      .bg-leaf-tl {
-        position: fixed;
-        top: -20px;
-        left: -20px;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 0.6;
+      /* STICKY TOP NAVIGATION BAR */
+      .studio-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: #FFFFFF;
+        border-bottom: 1px solid #E5E7EB;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        width: 100%;
       }
-      .bg-leaf-tr {
-        position: fixed;
-        top: -20px;
-        right: -20px;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 0.45;
-      }
-      .bg-leaf-bl {
-        position: fixed;
-        bottom: -20px;
-        left: -20px;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 0.5;
-      }
-      
-      /* Studio Header (Single-Page, No separate tabs) */
-      .studio-header {
-        position: relative;
-        z-index: 10;
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid #e2e8f0;
-        padding: 16px 32px;
+      .navbar-container {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        padding: 0 24px;
+        height: 52px;
+        max-width: 1680px;
+        margin: 0 auto;
       }
-      .brand-box {
+      .navbar-left {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 10px;
+        flex-shrink: 0;
       }
       .brand-icon-svg {
-        width: 38px;
-        height: 38px;
+        width: 28px;
+        height: 28px;
         flex-shrink: 0;
       }
       .brand-title {
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 700;
-        color: #0f2744;
-        margin: 0;
-        letter-spacing: -0.4px;
+        color: #0F172A;
+        letter-spacing: -0.3px;
+        white-space: nowrap;
       }
-      .brand-subtitle {
-        font-size: 13px;
-        font-weight: 500;
-        color: #64748b;
-        margin: 2px 0 0 0;
+      .navbar-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .studio-nav-pills {
+        display: flex;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-bottom: none;
+      }
+      .studio-nav-pills > li > a {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 18px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #475569;
+        text-decoration: none !important;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+        position: relative;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+      }
+      .studio-nav-pills > li > a:hover {
+        background: #F1F5F9;
+        color: #0F172A;
+      }
+      .studio-nav-pills > li.active > a,
+      .studio-nav-pills > li.active > a:focus,
+      .studio-nav-pills > li.active > a:hover {
+        color: #315DEB !important;
+        background: #EFF4FF !important;
+        border-bottom: 2px solid #315DEB !important;
+      }
+      .navbar-right {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
       }
       .header-dataset-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e40af;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
+        gap: 6px;
+        background: #EFF4FF;
+        border: 1px solid #C7D7FE;
+        color: #315DEB;
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 11.5px;
         font-weight: 600;
+        white-space: nowrap;
       }
       
       /* Main Content Container */
       .studio-container {
         position: relative;
         z-index: 5;
-        padding: 22px 28px 40px 28px;
-        max-width: 1620px;
+        padding: 16px 24px 32px 24px;
+        max-width: 1640px;
         margin: 0 auto;
       }
       
       /* Cards */
       .studio-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 18px 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 18px -2px rgba(15, 35, 75, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
       }
       
-      /* Card Headers */
+      /* Card Header */
       .card-header-flex {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
+        margin-bottom: 10px;
       }
       .card-title-group {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
       }
       .card-icon {
-        color: #2563eb;
-        font-size: 16px;
+        color: #315DEB;
+        font-size: 15px;
       }
       .card-main-title {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
-        color: #0f2744;
+        color: #0F172A;
         margin: 0;
       }
       .card-subtitle {
-        font-size: 12px;
-        color: #64748b;
-        margin: 2px 0 0 0;
+        font-size: 11.5px;
+        color: #64748B;
+        margin: 1px 0 0 0;
       }
       
       /* Segmented Method Selector */
       .method-segmented .shiny-options-group {
         display: flex;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 4px;
-        margin: 0 0 16px 0;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 3px;
+        margin: 0 0 10px 0;
       }
       .method-segmented .radio-inline {
         flex: 1;
@@ -360,144 +378,145 @@ ui <- fluidPage(
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 9px 12px;
-        border-radius: 8px;
-        font-size: 13px;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12.5px;
         font-weight: 600;
         color: #475569;
         cursor: pointer;
         transition: all 0.2s ease;
       }
       .method-segmented .radio-inline input[type='radio']:checked + span {
-        background: #2563eb;
-        color: #ffffff;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
+        background: #315DEB;
+        color: #FFFFFF;
+        box-shadow: 0 2px 4px rgba(49, 93, 235, 0.25);
       }
       
       /* Compact Dataset Info & Upload Box */
       .dataset-compact-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin-bottom: 16px;
+        background: #FAFAFC;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 10px;
       }
       .dataset-compact-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 10px;
+        gap: 8px;
+        margin-bottom: 6px;
       }
       .dataset-icon-circle {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: #eff6ff;
-        color: #2563eb;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: #EFF4FF;
+        color: #315DEB;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 14px;
         flex-shrink: 0;
       }
       .dataset-compact-title {
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 700;
-        color: #0f2744;
+        color: #0F172A;
         margin: 0;
       }
       .dataset-compact-meta {
         font-size: 11px;
-        color: #64748b;
+        color: #64748B;
         margin: 0;
       }
       .dataset-upload-row {
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid #e2e8f0;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid #E5E7EB;
       }
       .dataset-upload-row .shiny-input-container {
         margin-bottom: 0;
       }
       .dataset-upload-row .btn-file {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
-        color: #2563eb;
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        color: #315DEB;
         font-weight: 600;
-        font-size: 12px;
-        padding: 5px 10px;
-        border-radius: 6px;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 5px;
+        transition: all 0.15s ease;
       }
       .dataset-upload-row .btn-file:hover {
-        background: #eff6ff;
-        border-color: #3b82f6;
+        background: #EFF4FF;
+        border-color: #C7D7FE;
       }
       .dataset-upload-row .form-control {
-        font-size: 11px;
-        height: 30px;
+        font-size: 10.5px;
+        height: 26px;
       }
       .reset-link {
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 600;
-        color: #dc2626;
+        color: #DC2626;
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
-        margin-top: 6px;
+        margin-top: 4px;
       }
       .reset-link:hover {
         text-decoration: underline;
       }
       
-      /* Feature Selection Section & Alignment Fix */
+      /* Feature Selection Section (Compact Scrollable Box) */
       .feature-select-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
       .feature-select-title {
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 700;
-        color: #0f2744;
+        color: #0F172A;
         display: flex;
         align-items: center;
         gap: 6px;
       }
       .feature-quick-links {
-        font-size: 12px;
+        font-size: 11.5px;
       }
       .feature-quick-links a {
-        color: #2563eb;
+        color: #315DEB;
         font-weight: 600;
         text-decoration: none;
         cursor: pointer;
-        margin-left: 6px;
+        margin-left: 4px;
       }
       .feature-quick-links a:hover {
         text-decoration: underline;
       }
       .features-scroll-box {
-        max-height: 200px;
+        max-height: 145px;
         overflow-y: auto;
-        padding: 10px 14px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        margin-bottom: 14px;
+        padding: 6px 10px;
+        background: #FAFAFC;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        margin-bottom: 10px;
       }
       .features-scroll-box::-webkit-scrollbar {
-        width: 6px;
+        width: 5px;
       }
       .features-scroll-box::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #CBD5E1;
         border-radius: 4px;
       }
       .features-scroll-box .shiny-options-group {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 1px;
       }
       .features-scroll-box .checkbox {
         position: relative !important;
@@ -509,41 +528,37 @@ ui <- fluidPage(
       .features-scroll-box .checkbox label {
         display: flex !important;
         align-items: center !important;
-        padding: 4px 6px !important;
+        padding: 2.5px 4px !important;
         padding-left: 0 !important;
         margin: 0 !important;
         min-height: auto !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
         font-weight: 500 !important;
-        color: #1e293b !important;
+        color: #1E293B !important;
         cursor: pointer !important;
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         transition: background 0.15s ease !important;
       }
       .features-scroll-box .checkbox label:hover {
-        background: #f1f5f9 !important;
+        background: #F1F5F9 !important;
       }
-      /* Separate, fixed-width area for checkbox input with NO negative margins */
       .features-scroll-box .checkbox input[type='checkbox'] {
         position: static !important;
         float: none !important;
-        margin: 0 10px 0 0 !important;
-        width: 16px !important;
-        height: 16px !important;
-        min-width: 16px !important;
-        max-width: 16px !important;
+        margin: 0 8px 0 0 !important;
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        max-width: 14px !important;
         flex-shrink: 0 !important;
-        accent-color: #2563eb !important;
+        accent-color: #315DEB !important;
         cursor: pointer !important;
       }
-      /* Feature label text beside the checkbox with clean separation */
       .features-scroll-box .checkbox label span {
         display: inline-block !important;
-        padding-left: 0 !important;
-        margin-left: 0 !important;
         color: #334155 !important;
-        font-size: 13px !important;
-        line-height: 1.3 !important;
+        font-size: 12px !important;
+        line-height: 1.25 !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
@@ -551,576 +566,772 @@ ui <- fluidPage(
       
       /* Standardization Setting Box */
       .standardize-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-bottom: 14px;
+        background: #FAFAFC;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
       }
       .standardize-box .checkbox {
-        margin: 0;
+        margin: 0 !important;
+        padding: 0 !important;
       }
       .standardize-box .checkbox label {
-        font-size: 12.5px;
-        font-weight: 600;
-        color: #0f2744;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
+        display: flex !important;
+        align-items: center !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #0F172A !important;
+        margin: 0 !important;
+        cursor: pointer !important;
       }
-      .standardize-box input[type='checkbox'] {
-        accent-color: #2563eb;
-        width: 15px;
-        height: 15px;
-        cursor: pointer;
+      .standardize-box .checkbox input[type='checkbox'] {
+        margin: 0 6px 0 0 !important;
+        accent-color: #315DEB !important;
       }
       .standardize-help {
-        font-size: 11px;
-        color: #64748b;
-        margin: 4px 0 0 23px;
-        line-height: 1.4;
+        font-size: 10.5px;
+        color: #64748B;
+        margin: 2px 0 0 20px;
+        line-height: 1.35;
       }
       
-      /* Train-Test Split Block */
+      /* Split Display Box */
       .split-block {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin-bottom: 16px;
+        background: #FAFAFC;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 7px 10px;
+        margin-bottom: 10px;
       }
       .split-block-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 4px;
+        gap: 5px;
+        margin-bottom: 3px;
       }
       .split-title {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
-        color: #0f2744;
+        color: #0F172A;
       }
       .split-pct-text {
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 600;
-        color: #334155;
-        margin-bottom: 6px;
+        color: #315DEB;
+        margin-bottom: 4px;
       }
       .split-bar-container {
-        height: 8px;
-        border-radius: 6px;
-        background: #f1f5f9;
-        overflow: hidden;
+        height: 5px;
         display: flex;
-        margin-bottom: 6px;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 5px;
+        background: #E2E8F0;
       }
       .split-bar-train {
-        height: 100%;
-        background: #2563eb;
         width: 70.2%;
+        background: #315DEB;
       }
       .split-bar-test {
-        height: 100%;
-        background: #bae6fd;
         width: 29.8%;
+        background: #94A3B8;
       }
       .split-detail-text {
-        font-size: 11px;
-        color: #64748b;
+        font-size: 10.5px;
+        color: #64748B;
+      }
+      .split-toggle-box {
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed #E2E8F0;
+      }
+      .split-toggle-box .checkbox {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .split-toggle-box .checkbox label {
+        font-size: 10.5px !important;
+        color: #475569 !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+      .split-toggle-box .checkbox input[type='checkbox'] {
+        margin: 0 5px 0 0 !important;
+        accent-color: #315DEB !important;
       }
       
-      /* Run Analysis Button */
+      /* Primary Run Button */
       .btn-run-studio {
-        background: #2563eb;
-        color: #ffffff;
-        border: none;
-        border-radius: 10px;
-        padding: 12px 18px;
-        font-size: 14px;
-        font-weight: 700;
         width: 100%;
+        background: #315DEB;
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 9px;
+        border-radius: 8px;
+        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
         transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(49, 93, 235, 0.2);
       }
       .btn-run-studio:hover {
-        background: #1d4ed8;
-        color: #ffffff;
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
-        transform: translateY(-1px);
+        background: #254EC9;
+        color: #FFFFFF;
+        box-shadow: 0 3px 8px rgba(49, 93, 235, 0.3);
       }
       
-      /* Circular SVG Gauges */
-      .gauges-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        gap: 10px;
-        padding: 8px 0;
-      }
-      .gauge-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-      .gauge-header-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: #475569;
-        margin-bottom: 4px;
-      }
-      .gauge-svg {
-        transform: rotate(-90deg);
-        display: block;
-      }
-      .gauge-track {
-        fill: none;
-        stroke: #f1f5f9;
-        stroke-width: 8;
-      }
-      .gauge-fill {
-        fill: none;
-        stroke-width: 8;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 0.6s ease;
-      }
-      .gauge-fill-pc1 { stroke: #2563eb; }
-      .gauge-fill-pc2 { stroke: #8b5cf6; }
-      .gauge-fill-total { stroke: #1e3a8a; }
-      .gauge-text {
-        font-size: 14px;
-        font-weight: 700;
-        fill: #0f2744;
-        text-anchor: middle;
-        dominant-baseline: central;
-        transform: rotate(90deg);
-        transform-origin: 50% 50%;
-      }
-      .gauge-sub-label {
-        font-size: 11px;
-        color: #64748b;
-        margin-top: 4px;
-      }
-      
-      /* Feature Contributions */
-      .contrib-select-wrapper {
-        width: 90px;
-      }
-      .contrib-select-wrapper .form-group {
-        margin-bottom: 0;
-      }
-      .contrib-select-wrapper select {
-        padding: 4px 8px;
-        height: 32px;
-        font-size: 12px;
-        font-weight: 600;
-        border-radius: 6px;
-        border: 1px solid #cbd5e1;
-      }
+      /* RESTORED CLEAN FEATURE CONTRIBUTION CHART STYLING */
       .feature-contrib-list {
-        max-height: 250px;
+        padding: 2px 0;
+        max-height: 480px;
         overflow-y: auto;
-        padding-right: 4px;
       }
       .feature-contrib-list::-webkit-scrollbar {
         width: 5px;
       }
       .feature-contrib-list::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #CBD5E1;
         border-radius: 4px;
       }
       .feature-contrib-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
+        gap: 12px;
+        margin-bottom: 8px;
       }
       .contrib-name {
-        width: 120px;
-        font-size: 12px;
+        width: 155px;
+        min-width: 155px;
+        font-size: 12.5px;
         font-weight: 500;
-        color: #1e293b;
+        color: #1E293B;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .contrib-bar-track {
         flex-grow: 1;
-        height: 8px;
-        background: #f1f5f9;
-        border-radius: 6px;
+        height: 9px;
+        background: #F1F5F9;
+        border-radius: 5px;
         overflow: hidden;
       }
       .contrib-bar-fill {
         height: 100%;
-        background: linear-gradient(90deg, #38bdf8, #2563eb);
-        border-radius: 6px;
-        transition: width 0.4s ease;
+        border-radius: 5px;
+        transition: width 0.3s ease;
       }
       .contrib-val {
-        width: 38px;
-        text-align: right;
+        width: 55px;
+        min-width: 55px;
         font-size: 12px;
-        font-weight: 600;
-        color: #0f2744;
-        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        text-align: right;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       }
       
-      /* Clean Academic Table Preview */
+      /* Metric Chips Row */
+      .metric-chips-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .metric-chip {
+        flex: 1;
+        min-width: 110px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .metric-chip-primary {
+        background: #EFF4FF;
+        border-color: #C7D7FE;
+      }
+      .metric-chip-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #64748B;
+      }
+      .metric-chip-primary .metric-chip-label {
+        color: #315DEB;
+      }
+      .metric-chip-val {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0F172A;
+      }
+      .metric-chip-primary .metric-chip-val {
+        color: #315DEB;
+      }
+      
+      /* Context Info Box */
+      .insights-context-box {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #334155;
+        line-height: 1.45;
+      }
+      .insights-context-box strong {
+        color: #0F172A;
+      }
+      
+      /* Overview Cards */
+      .overview-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 10px;
+        padding: 16px 18px;
+        height: 100%;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .overview-card-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        margin-bottom: 6px;
+      }
+      .overview-card-val {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 4px;
+      }
+      .overview-card-desc {
+        font-size: 11.5px;
+        color: #64748B;
+        line-height: 1.4;
+        margin-bottom: 8px;
+      }
+      .overview-card-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10.5px;
+        font-weight: 600;
+        background: #EFF4FF;
+        color: #315DEB;
+        border: 1px solid #C7D7FE;
+        align-self: flex-start;
+      }
+      .overview-card-badge-stale {
+        background: #FFFBEB;
+        color: #B45309;
+        border-color: #FDE68A;
+      }
+      
+      /* Alerts & Notices */
+      .studio-alert-notice {
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        border-left: 4px solid #315DEB;
+        padding: 10px 14px;
+        border-radius: 6px;
+        color: #1E40AF;
+        font-size: 12px;
+        margin-bottom: 14px;
+      }
+      .studio-alert-warning {
+        background: #FFFBEB;
+        border: 1px solid #FDE68A;
+        border-left: 4px solid #F59E0B;
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: #92400E;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+      
+      /* Clean Table */
       .clean-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 12.5px;
       }
       .clean-table th {
-        background: #f8fafc;
+        background: #F8FAFC;
         color: #475569;
         font-weight: 700;
-        padding: 10px 14px;
-        border-bottom: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        border-bottom: 1px solid #E5E7EB;
         text-align: left;
       }
       .clean-table td {
-        padding: 9px 14px;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 8px 12px;
+        border-bottom: 1px solid #F1F5F9;
         color: #334155;
       }
       .clean-table tr:hover {
-        background: #f8fafc;
+        background: #F8FAFC;
       }
       
       /* Badges */
       .badge-cultivar-1 {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10.5px;
         font-weight: 600;
-        background: #eff6ff;
-        color: #1d4ed8;
-        border: 1px solid #bfdbfe;
+        background: #EFF4FF;
+        color: #315DEB;
+        border: 1px solid #C7D7FE;
       }
       .badge-cultivar-2 {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10.5px;
         font-weight: 600;
-        background: #fff7ed;
-        color: #c2410c;
-        border: 1px solid #fed7aa;
+        background: #FDF2F8;
+        color: #E64980;
+        border: 1px solid #FBCFE8;
       }
       .badge-cultivar-3 {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10.5px;
         font-weight: 600;
-        background: #faf5ff;
-        color: #7e22ce;
-        border: 1px solid #e9d5ff;
+        background: #F5F3FF;
+        color: #8055C7;
+        border: 1px solid #DDD6FE;
       }
       .badge-train {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10.5px;
         font-weight: 600;
-        background: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
+        background: #F0FDF4;
+        color: #16A34A;
+        border: 1px solid #BBF7D0;
       }
       .badge-test {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10.5px;
         font-weight: 600;
-        background: #f8fafc;
-        color: #475569;
-        border: 1px solid #cbd5e1;
+        background: #F8FAFC;
+        color: #64748B;
+        border: 1px solid #E2E8F0;
       }
       
-      /* Action / Export Buttons */
+      /* Action Buttons */
       .btn-export {
-        background: #ffffff;
-        color: #2563eb;
-        border: 1px solid #bfdbfe;
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-size: 12px;
+        background: #FFFFFF;
+        color: #315DEB;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        padding: 5px 11px;
+        font-size: 11.5px;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         cursor: pointer;
         transition: all 0.15s ease;
         text-decoration: none !important;
       }
       .btn-export:hover {
-        background: #eff6ff;
-        border-color: #3b82f6;
-        color: #1d4ed8;
+        background: #F8FAFC;
+        border-color: #315DEB;
+        color: #254EC9;
       }
       
       /* Info Tag */
       .info-tag {
         font-size: 11px;
-        color: #64748b;
-        background: #f1f5f9;
-        border-radius: 6px;
-        padding: 5px 8px;
-        margin-top: 6px;
-        line-height: 1.4;
+        color: #475569;
+        background: #F1F5F9;
+        border-radius: 5px;
+        padding: 4px 8px;
+        margin-bottom: 8px;
+        display: inline-block;
+        line-height: 1.35;
       }
-      
-      /* Validation Alert */
-      .studio-alert-warning {
-        background: #fffbeb;
-        border: 1px solid #fde68a;
-        border-left: 4px solid #f59e0b;
-        padding: 12px 16px;
-        border-radius: 8px;
-        color: #92400e;
-        font-size: 13px;
-        margin-bottom: 16px;
-      }
+    ")),
+    
+    tags$script(HTML("
+      // Window resize trigger on tab change for responsive ggplot sizing
+      $(document).on('shown.bs.tab', '#main_nav_tabs a[data-toggle=\"tab\"]', function (e) {
+        var targetVal = $(e.target).data('value');
+        Shiny.setInputValue('active_tab', targetVal);
+        $(window).trigger('resize');
+      });
     "))
   ),
   
-  # Decorative Leaf SVG Background Elements
-  tags$div(class = "bg-leaf-tl",
-    HTML('<svg width="220" height="220" viewBox="0 0 200 200" fill="none"><path d="M10 190C30 110 110 30 190 10C160 80 130 130 80 160C40 180 20 190 10 190Z" fill="#3b82f6" fill-opacity="0.10"/><path d="M10 190C50 140 100 90 190 10" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="2"/></svg>')
-  ),
-  tags$div(class = "bg-leaf-tr",
-    HTML('<svg width="240" height="240" viewBox="0 0 200 200" fill="none"><path d="M190 10C110 30 30 110 10 190C80 160 130 130 160 80C180 40 190 20 190 10Z" fill="#60a5fa" fill-opacity="0.08"/></svg>')
-  ),
-  tags$div(class = "bg-leaf-bl",
-    HTML('<svg width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M10 190C60 130 120 70 190 10C130 60 70 120 10 190Z" fill="#93c5fd" fill-opacity="0.09"/></svg>')
-  ),
-  
-  # Studio Header (Clean, focused single-page header)
-  div(class = "studio-header",
-    div(class = "brand-box",
-      HTML('<svg class="brand-icon-svg" viewBox="0 0 40 40" fill="none"><path d="M4 36C8 20 22 6 36 4C30 16 24 24 14 30C8 34 5 36 4 36Z" fill="#2563eb"/><path d="M4 36C12 26 20 18 36 4" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><path d="M14 24C16 18 22 14 28 12" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/></svg>'),
-      div(
-        h1(class = "brand-title", "Feature Extraction Studio"),
-        p(class = "brand-subtitle", "PCA and LDA on the Wine Dataset")
+  # ----------------------------------------------------------------------------
+  # 1. PERSISTENT TOP NAVIGATION BAR (EXACTLY THREE TABS)
+  # ----------------------------------------------------------------------------
+  tags$header(class = "studio-navbar",
+    div(class = "navbar-container",
+      # Left: Title
+      div(class = "navbar-left",
+        HTML('<svg class="brand-icon-svg" viewBox="0 0 40 40" fill="none"><path d="M4 36C8 20 22 6 36 4C30 16 24 24 14 30C8 34 5 36 4 36Z" fill="#315DEB"/><path d="M4 36C12 26 20 18 36 4" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><path d="M14 24C16 18 22 14 28 12" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/></svg>'),
+        span(class = "brand-title", "PCA & LDA Feature Extraction Studio")
+      ),
+      
+      # Center: Exactly Three Navigation Tabs
+      div(class = "navbar-center",
+        tags$ul(class = "nav nav-pills studio-nav-pills", id = "main_nav_tabs",
+          tags$li(class = "active", tags$a(href = "#tab-analysis", `data-toggle` = "tab", `data-value` = "analysis", "Analysis")),
+          tags$li(tags$a(href = "#tab-insights", `data-toggle` = "tab", `data-value` = "insights", "Insights")),
+          tags$li(tags$a(href = "#tab-overview", `data-toggle` = "tab", `data-value` = "overview", "Overview"))
+        )
+      ),
+      
+      # Right: Wine Dataset Badge
+      div(class = "navbar-right",
+        div(class = "header-dataset-badge",
+          HTML("🍇"), textOutput("header_badge_text", inline = TRUE)
+        )
       )
-    ),
-    div(class = "header-dataset-badge",
-      HTML("🍇"), textOutput("header_badge_text", inline = TRUE)
     )
   ),
   
-  # Main Studio Dashboard Container
+  # ----------------------------------------------------------------------------
+  # 2. MAIN CONTAINER WITH THREE TAB PANES
+  # ----------------------------------------------------------------------------
   div(class = "studio-container",
     
-    # UI Warning if fewer than 2 features selected
-    uiOutput("validation_alert"),
-    
-    fluidRow(
-      # ------------------------------------------------------------------------
-      # COLUMN 1: LEFT CONTROLS & FEATURE SELECTION (~25% width)
-      # ------------------------------------------------------------------------
-      column(width = 3,
-        div(class = "studio-card",
-          
-          # 1. Method Selector
-          div(class = "card-header-flex", style = "margin-bottom: 8px;",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("⚙")),
-              h4(class = "card-main-title", "Method")
+    div(class = "tab-content",
+      
+      # ========================================================================
+      # TAB 1: ANALYSIS
+      # ========================================================================
+      div(class = "tab-pane active", id = "tab-analysis",
+        # UI Warning if fewer than 2 features selected
+        uiOutput("validation_alert"),
+        
+        fluidRow(
+          # Left: Compact Control Panel (width = 3)
+          column(width = 3,
+            div(class = "studio-card",
+              
+              # 1. Method Selector
+              div(class = "card-header-flex", style = "margin-bottom: 6px;",
+                div(class = "card-title-group",
+                  span(class = "card-icon", HTML("⚙")),
+                  h4(class = "card-main-title", "Method")
+                )
+              ),
+              div(class = "method-segmented",
+                radioButtons("method", label = NULL,
+                             choices = c("PCA" = "pca", "LDA" = "lda"),
+                             selected = "pca", inline = TRUE)
+              ),
+              
+              # 2. Dataset Information & CSV Upload
+              div(class = "card-header-flex", style = "margin-bottom: 6px;",
+                div(class = "card-title-group",
+                  span(class = "card-icon", HTML("🗄")),
+                  h4(class = "card-main-title", "Dataset Information")
+                )
+              ),
+              div(class = "dataset-compact-box",
+                div(class = "dataset-compact-header",
+                  div(class = "dataset-icon-circle", HTML("🍷")),
+                  div(
+                    p(class = "dataset-compact-title", textOutput("ds_name", inline = TRUE)),
+                    p(class = "dataset-compact-meta", textOutput("ds_meta", inline = TRUE))
+                  )
+                ),
+                div(class = "dataset-upload-row",
+                  fileInput("upload_csv", label = NULL, buttonLabel = "Upload CSV", 
+                            placeholder = "Wine dataset default", accept = c(".csv", "text/csv")),
+                  uiOutput("ui_reset_dataset")
+                )
+              ),
+              
+              # 3. Feature Selection
+              div(class = "feature-select-header",
+                div(class = "feature-select-title",
+                  span(class = "card-icon", HTML("▼")),
+                  span("Feature Selection")
+                ),
+                div(class = "feature-quick-links",
+                  actionLink("select_all", "Select All"),
+                  span("|", style = "color: #cbd5e1; margin: 0 2px;"),
+                  actionLink("deselect_all", "Deselect All")
+                )
+              ),
+              div(class = "features-scroll-box",
+                checkboxGroupInput("selected_features", label = NULL,
+                                   choiceNames = features_meta$display_name,
+                                   choiceValues = features_meta$key,
+                                   selected = features_meta$key)
+              ),
+              
+              # 4. Standardization Option
+              div(class = "standardize-box",
+                checkboxInput("standardize", label = "Standardize Features (Z-Score)", value = TRUE),
+                p(class = "standardize-help", 
+                  "Scales features to zero mean and unit variance using training statistics.")
+              ),
+              
+              # 5. Fixed Train-Test Split (Strict 70:30, Seed 42)
+              div(class = "split-block",
+                div(class = "split-block-header",
+                  span(class = "card-icon", HTML("🕒")),
+                  span(class = "split-title", "Train-Test Split")
+                ),
+                div(class = "split-pct-text", "70% Training | 30% Testing"),
+                div(class = "split-bar-container",
+                  div(class = "split-bar-train"),
+                  div(class = "split-bar-test")
+                ),
+                div(class = "split-detail-text", textOutput("split_detail_text", inline = TRUE)),
+                div(class = "split-toggle-box",
+                  checkboxInput("distinguish_split", "Distinguish training & testing markers", value = FALSE)
+                )
+              ),
+              
+              # 6. Run Analysis Button
+              actionButton("btn_run", label = tagList(HTML("▶"), "Run Analysis"),
+                           class = "btn-run-studio")
             )
           ),
-          div(class = "method-segmented",
-            radioButtons("method", label = NULL,
-                         choices = c("PCA" = "pca", "LDA" = "lda"),
-                         selected = "pca", inline = TRUE)
-          ),
           
-          # 2. Compact Dataset Information & Optional Upload
-          div(class = "card-header-flex", style = "margin-bottom: 8px;",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("🗄")),
-              h4(class = "card-main-title", "Dataset Information")
+          # Right: Main Scatter Plot (width = 9)
+          column(width = 9,
+            div(class = "studio-card",
+              div(class = "card-header-flex",
+                div(class = "card-title-group",
+                  span(class = "card-icon", HTML("📊")),
+                  div(
+                    h4(class = "card-main-title", textOutput("scatter_card_title", inline = TRUE)),
+                    p(class = "card-subtitle", textOutput("scatter_card_subtitle", inline = TRUE))
+                  )
+                ),
+                downloadButton("download_scatter_png", "Save PNG", class = "btn-export")
+              ),
+              plotOutput("plot_scatter", height = "510px")
             )
-          ),
-          div(class = "dataset-compact-box",
-            div(class = "dataset-compact-header",
-              div(class = "dataset-icon-circle", HTML("🍷")),
-              div(
-                p(class = "dataset-compact-title", textOutput("ds_name", inline = TRUE)),
-                p(class = "dataset-compact-meta", textOutput("ds_meta", inline = TRUE))
-              )
-            ),
-            div(class = "dataset-upload-row",
-              fileInput("upload_csv", label = NULL, buttonLabel = "Upload CSV", 
-                        placeholder = "Wine dataset default", accept = c(".csv", "text/csv")),
-              uiOutput("ui_reset_dataset")
-            )
-          ),
-          
-          # 3. Feature Selection
-          div(class = "feature-select-header",
-            div(class = "feature-select-title",
-              span(class = "card-icon", HTML("▼")),
-              span("Feature Selection")
-            ),
-            div(class = "feature-quick-links",
-              actionLink("select_all", "Select All"),
-              span("|", style = "color: #cbd5e1; margin: 0 2px;"),
-              actionLink("deselect_all", "Deselect All")
-            )
-          ),
-          div(class = "features-scroll-box",
-            checkboxGroupInput("selected_features", label = NULL,
-                               choiceNames = features_meta$display_name,
-                               choiceValues = features_meta$key,
-                               selected = features_meta$key)
-          ),
-          
-          # 4. Standardization Setting
-          div(class = "standardize-box",
-            checkboxInput("standardize", label = "Standardize Features (Z-Score)", value = TRUE),
-            p(class = "standardize-help", 
-              "Scales features to zero mean and unit variance using training statistics (recommended for continuous features with different units).")
-          ),
-          
-          # 5. Fixed Train-Test Split (Strict 70:30, Seed 42)
-          div(class = "split-block",
-            div(class = "split-block-header",
-              span(class = "card-icon", HTML("🕒")),
-              span(class = "split-title", "Train-Test Split")
-            ),
-            div(class = "split-pct-text", "70% Training | 30% Testing"),
-            div(class = "split-bar-container",
-              div(class = "split-bar-train"),
-              div(class = "split-bar-test")
-            ),
-            div(class = "split-detail-text", textOutput("split_detail_text", inline = TRUE))
-          ),
-          
-          # 6. Run Analysis Button
-          actionButton("btn_run", label = tagList(HTML("▶"), "Run Analysis"),
-                       class = "btn-run-studio")
+          )
         )
       ),
       
-      # ------------------------------------------------------------------------
-      # COLUMN 2: CENTER PLOTS (SCATTER & CONDITIONAL SCREE) (~50% width)
-      # ------------------------------------------------------------------------
-      column(width = 6,
-        # Main Scatter Plot Card (Large)
-        div(class = "studio-card",
-          div(class = "card-header-flex",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("📊")),
-              div(
-                h4(class = "card-main-title", textOutput("scatter_card_title", inline = TRUE)),
-                p(class = "card-subtitle", textOutput("scatter_card_subtitle", inline = TRUE))
-              )
-            ),
-            downloadButton("download_scatter_png", "Save PNG", class = "btn-export")
-          ),
-          plotOutput("plot_scatter", height = "440px")
-        ),
+      # ========================================================================
+      # TAB 2: INSIGHTS (DYNAMICALLY UPDATES BY METHOD; NO DUPLICATE SCATTER PLOT)
+      # ========================================================================
+      div(class = "tab-pane", id = "tab-insights",
         
-        # Secondary Chart: PCA Scree Plot (when PCA is selected)
+        # --- A. When PCA is selected ---
         conditionalPanel(
           condition = "input.method == 'pca'",
-          div(class = "studio-card",
-            div(class = "card-header-flex",
-              div(class = "card-title-group",
-                span(class = "card-icon", HTML("☊")),
-                div(
-                  h4(class = "card-main-title", "PCA Scree Plot"),
-                  p(class = "card-subtitle", "Explained variance ratio per principal component")
-                )
+          fluidRow(
+            # Left: Explained Variance Summary & Scree Plot (width = 5)
+            column(width = 5,
+              # Explained Variance Summary Card
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("❖")),
+                    div(
+                      h4(class = "card-main-title", "Explained Variance Summary (PCA)"),
+                      p(class = "card-subtitle", "Variance explained per principal component (training fit)")
+                    )
+                  )
+                ),
+                uiOutput("ui_pca_variance_stats"),
+                uiOutput("table_pca_variance")
               ),
-              downloadButton("download_scree_png", "Save PNG", class = "btn-export")
+              
+              # Scree Plot Card (Simple Blue Bars, No Curve)
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("☊")),
+                    div(
+                      h4(class = "card-main-title", "PCA Scree Plot"),
+                      p(class = "card-subtitle", "Explained variance percentage per principal component")
+                    )
+                  ),
+                  downloadButton("download_scree_png", "Save PNG", class = "btn-export")
+                ),
+                plotOutput("plot_scree", height = "230px")
+              )
             ),
-            plotOutput("plot_scree", height = "240px")
+            
+            # Right: Restored PCA Feature Contributions (width = 7)
+            column(width = 7,
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("❄")),
+                    div(
+                      h4(class = "card-main-title", "PCA Feature Contributions"),
+                      p(class = "card-subtitle", "Eigenvector loadings for the selected principal component")
+                    )
+                  ),
+                  div(style = "width: 95px;",
+                    selectInput("pca_contrib_comp", label = NULL, choices = paste0("PC", 1:13), selected = "PC1")
+                  )
+                ),
+                div(class = "info-tag", "Blue = positive · Pink = negative · Sorted by magnitude"),
+                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 10px 0; line-height: 1.4;",
+                  "Loadings represent feature coefficients in the principal component eigenvector. Sorted by absolute magnitude."),
+                uiOutput("ui_pca_feature_contributions")
+              )
+            )
           )
         ),
         
-        # Secondary Chart: LDA Discriminant Variance Bar Chart (when LDA is selected)
+        # --- B. When LDA is selected (Duplicate Scatter Plot Removed, Clean Balanced 6/6 Layout) ---
         conditionalPanel(
           condition = "input.method == 'lda'",
-          div(class = "studio-card",
-            div(class = "card-header-flex",
-              div(class = "card-title-group",
-                span(class = "card-icon", HTML("📊")),
-                div(
-                  h4(class = "card-main-title", "LDA Discriminant Variance"),
-                  p(class = "card-subtitle", "Relative discriminant information captured by each linear discriminant")
+          fluidRow(
+            # Left: Discriminant Variance Chart (width = 6)
+            column(width = 6,
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("❖")),
+                    div(
+                      h4(class = "card-main-title", "LDA Discriminant Variance"),
+                      p(class = "card-subtitle", "Relative between-class separation captured by linear discriminants")
+                    )
+                  ),
+                  downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
+                ),
+                uiOutput("ui_lda_variance_stats"),
+                plotOutput("plot_lda_variance", height = "240px"),
+                div(class = "insights-context-box",
+                  strong("Fisher's Criterion: "),
+                  "Linear Discriminant Analysis finds linear combinations of features that maximize the ratio of between-class variance to within-class variance (SB / SW). With 3 distinct cultivars, LDA generates exactly min(p, 3 - 1) = 2 discriminant functions (LD1 and LD2), capturing 100% of the between-class discriminant space.",
+                  tags$div(style = "margin-top: 6px;",
+                    strong("Held-Out Test Accuracy: "),
+                    "98.11% (52 of 53 test observations correctly classified with zero data leakage)."
+                  )
                 )
-              ),
-              downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
+              )
             ),
-            plotOutput("plot_lda_variance", height = "240px")
+            
+            # Right: Restored LDA Feature Contributions (width = 6)
+            column(width = 6,
+              div(class = "studio-card",
+                div(class = "card-header-flex",
+                  div(class = "card-title-group",
+                    span(class = "card-icon", HTML("❄")),
+                    div(
+                      h4(class = "card-main-title", "LDA Feature Contributions"),
+                      p(class = "card-subtitle", "Linear discriminant scaling coefficients for the selected axis")
+                    )
+                  ),
+                  div(style = "width: 95px;",
+                    selectInput("lda_contrib_comp", label = NULL, choices = c("LD1" = "LD1", "LD2" = "LD2"), selected = "LD1")
+                  )
+                ),
+                div(class = "info-tag", "Blue = positive · Pink = negative · Sorted by magnitude"),
+                p(style = "font-size: 11.5px; color: #64748B; margin: 0 0 10px 0; line-height: 1.4;",
+                  "Coefficients indicate each feature's contribution to cultivar separation on this axis. Their magnitude depends on the fitted model and feature standardization."),
+                uiOutput("ui_lda_feature_contributions")
+              )
+            )
           )
         )
       ),
       
-      # ------------------------------------------------------------------------
-      # COLUMN 3: METRICS & FEATURE CONTRIBUTIONS (~25% width)
-      # ------------------------------------------------------------------------
-      column(width = 3,
-        # Explained Variance / Discriminant Variance Card
-        div(class = "studio-card",
-          div(class = "card-header-flex",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("❖")),
-              h4(class = "card-main-title", textOutput("variance_card_title", inline = TRUE))
-            ),
-            span(title = "Variance or between-class separation explained by the components",
-                 style = "color: #94a3b8; cursor: help; font-size: 14px;", "ⓘ")
-          ),
-          uiOutput("ui_circular_gauges")
-        ),
+      # ========================================================================
+      # TAB 3: OVERVIEW (DYNAMIC, METHOD-AWARE, LATEST COMPLETED ANALYSIS)
+      # ========================================================================
+      div(class = "tab-pane", id = "tab-overview",
         
-        # Feature Contributions Card (Single Panel with Dynamic Dropdown)
-        div(class = "studio-card",
-          div(class = "card-header-flex",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("❄")),
-              h4(class = "card-main-title", textOutput("contrib_card_title", inline = TRUE))
-            ),
-            div(class = "contrib-select-wrapper",
-              selectInput("contrib_comp", label = NULL, choices = c("PC1" = "PC1"))
+        # Sync notice if inputs in Analysis tab have changed since last completed calculation
+        uiOutput("overview_sync_notice"),
+        
+        # Top Row: Dynamic Summary Cards
+        fluidRow(
+          # Card 1: Active Method
+          column(width = 3,
+            div(class = "overview-card",
+              div(
+                div(class = "overview-card-label", "Active Method"),
+                div(class = "overview-card-val", textOutput("overview_method_val")),
+                div(class = "overview-card-desc", textOutput("overview_method_desc"))
+              ),
+              uiOutput("overview_method_badge_ui")
             )
           ),
-          div(class = "info-tag", textOutput("contrib_info_desc")),
-          tags$hr(style = "margin: 10px 0 12px 0; border: none; border-top: 1px solid #f1f5f9;"),
-          uiOutput("ui_feature_contributions")
-        )
-      )
-    ),
-    
-    # --------------------------------------------------------------------------
-    # BOTTOM ROW: TRANSFORMED DATA PREVIEW (FIRST 5 ROWS)
-    # --------------------------------------------------------------------------
-    fluidRow(
-      column(width = 12,
-        div(class = "studio-card",
-          div(class = "card-header-flex",
-            div(class = "card-title-group",
-              span(class = "card-icon", HTML("▦")),
+          
+          # Card 2: Dataset Information
+          column(width = 3,
+            div(class = "overview-card",
               div(
-                h4(class = "card-main-title", "Transformed Data (First 5 Rows)"),
-                p(class = "card-subtitle", "Projected coordinates alongside original class labels and partition tags")
-              )
-            ),
-            downloadButton("download_transformed_csv", "Download CSV", class = "btn-export")
+                div(class = "overview-card-label", "Dataset Information"),
+                div(class = "overview-card-val", textOutput("overview_dataset_val")),
+                div(class = "overview-card-desc", textOutput("overview_dataset_desc"))
+              ),
+              div(class = "overview-card-badge", textOutput("overview_dataset_badge"))
+            )
           ),
-          tableOutput("table_transformed_preview")
+          
+          # Card 3: Dynamic Method-Specific Metric (PCA Variance vs LDA Trace)
+          column(width = 3,
+            div(class = "overview-card",
+              div(
+                div(class = "overview-card-label", textOutput("overview_metric_card_label")),
+                div(class = "overview-card-val", textOutput("overview_metric_card_val")),
+                div(class = "overview-card-desc", textOutput("overview_metric_card_desc"))
+              ),
+              uiOutput("overview_metric_card_badge_ui")
+            )
+          ),
+          
+          # Card 4: Partition
+          column(width = 3,
+            div(class = "overview-card",
+              div(
+                div(class = "overview-card-label", "Train / Test Partition"),
+                div(class = "overview-card-val", "70:30 Split"),
+                div(class = "overview-card-desc", textOutput("overview_split_desc"))
+              ),
+              div(class = "overview-card-badge", "Fixed Seed 42 • Zero Leakage")
+            )
+          )
+        ),
+        
+        tags$div(style = "height: 16px;"),
+        
+        # Bottom Row: Transformed Data Preview Table & CSV Download (Method-Aware)
+        fluidRow(
+          column(width = 12,
+            div(class = "studio-card",
+              div(class = "card-header-flex",
+                div(class = "card-title-group",
+                  span(class = "card-icon", HTML("▦")),
+                  div(
+                    h4(class = "card-main-title", textOutput("overview_table_title", inline = TRUE)),
+                    p(class = "card-subtitle", textOutput("overview_table_subtitle", inline = TRUE))
+                  )
+                ),
+                downloadButton("download_transformed_csv", "Download CSV", class = "btn-export")
+              ),
+              uiOutput("table_transformed_preview")
+            )
+          )
         )
       )
     )
@@ -1146,6 +1357,17 @@ server <- function(input, output, session) {
   
   # Reactive container holding current fitted model results
   active_model <- reactiveVal(baseline_res)
+  
+  # State tracking the exact settings & model of the latest successfully completed analysis run
+  latest_analysis <- reactiveValues(
+    method = "pca",
+    keys = feature_keys,
+    standardize = TRUE,
+    dataset_name = "Wine Dataset",
+    num_samples = nrow(wine),
+    res = baseline_res,
+    timestamp = Sys.time()
+  )
   
   # Header & Dataset Info Text
   output$header_badge_text <- renderText({
@@ -1212,7 +1434,6 @@ server <- function(input, output, session) {
       }
     }
     
-    # If no non-numeric column, check integer columns with small cardinality (2 to 10 unique values)
     if (is.null(class_cand)) {
       for (cn in num_names) {
         u_cnt <- length(unique(df_uploaded[[cn]]))
@@ -1279,22 +1500,34 @@ server <- function(input, output, session) {
                              choices = setNames(up_keys, up_cols),
                              selected = up_keys)
     
-    # Recompute models
-    res_up <- compute_feature_models(
-      selected_keys = up_keys,
-      standardize = input$standardize,
-      tr_data = up_train,
-      te_data = up_test,
-      class_col = class_cand,
-      cols_dict = up_cols
-    )
+    # Recompute models safely with tryCatch
+    res_up <- tryCatch({
+      compute_feature_models(
+        selected_keys = up_keys,
+        standardize = input$standardize,
+        tr_data = up_train,
+        te_data = up_test,
+        class_col = class_cand,
+        cols_dict = up_cols
+      )
+    }, error = function(e) {
+      showNotification(paste("Error running model:", conditionMessage(e)), type = "error")
+      NULL
+    })
+    
     if (!is.null(res_up)) {
       active_model(res_up)
+      latest_analysis$method <- input$method
+      latest_analysis$keys <- up_keys
+      latest_analysis$standardize <- input$standardize
+      latest_analysis$dataset_name <- file$name
+      latest_analysis$num_samples <- nrow(df_uploaded)
+      latest_analysis$res <- res_up
+      latest_analysis$timestamp <- Sys.time()
+      showNotification(sprintf("Uploaded '%s' loaded successfully (%d samples, %d features).",
+                               file$name, nrow(df_uploaded), length(up_keys)),
+                       type = "message")
     }
-    
-    showNotification(sprintf("Uploaded '%s' loaded successfully (%d samples, %d features).",
-                             file$name, nrow(df_uploaded), length(up_keys)),
-                     type = "message")
   })
   
   # Reset back to default Wine dataset
@@ -1313,18 +1546,30 @@ server <- function(input, output, session) {
                              choices = setNames(features_meta$key, features_meta$display_name),
                              selected = features_meta$key)
     
-    res_wine <- compute_feature_models(
-      selected_keys = feature_keys,
-      standardize = input$standardize,
-      tr_data = wine_train,
-      te_data = wine_test,
-      class_col = "Cultivar",
-      cols_dict = feature_cols
-    )
+    res_wine <- tryCatch({
+      compute_feature_models(
+        selected_keys = feature_keys,
+        standardize = input$standardize,
+        tr_data = wine_train,
+        te_data = wine_test,
+        class_col = "Cultivar",
+        cols_dict = feature_cols
+      )
+    }, error = function(e) {
+      NULL
+    })
+    
     if (!is.null(res_wine)) {
       active_model(res_wine)
+      latest_analysis$method <- input$method
+      latest_analysis$keys <- feature_keys
+      latest_analysis$standardize <- input$standardize
+      latest_analysis$dataset_name <- "Wine Dataset"
+      latest_analysis$num_samples <- nrow(wine)
+      latest_analysis$res <- res_wine
+      latest_analysis$timestamp <- Sys.time()
+      showNotification("Reverted to default Wine Recognition dataset.", type = "message")
     }
-    showNotification("Reverted to default Wine Recognition dataset.", type = "message")
   })
   
   # Quick Link Observers: Select All / Deselect All
@@ -1335,51 +1580,65 @@ server <- function(input, output, session) {
     updateCheckboxGroupInput(session, "selected_features", selected = character(0))
   })
   
-  # Run Analysis Trigger
+  # Run Analysis Trigger (Strictly Updates latest_analysis only on success)
   observeEvent(input$btn_run, {
-    req(input$selected_features)
-    
-    if (length(input$selected_features) < 2) {
+    feats <- input$selected_features
+    if (is.null(feats) || length(feats) < 2) {
       showNotification("Please select at least 2 features to perform 2D dimensionality reduction.",
                        type = "warning", duration = 4)
       return()
     }
     
-    res <- compute_feature_models(
-      selected_keys = input$selected_features,
-      standardize = input$standardize,
-      tr_data = dataset_state$train,
-      te_data = dataset_state$test,
-      class_col = dataset_state$class_col,
-      cols_dict = dataset_state$cols
-    )
+    res <- tryCatch({
+      compute_feature_models(
+        selected_keys = feats,
+        standardize = input$standardize,
+        tr_data = dataset_state$train,
+        te_data = dataset_state$test,
+        class_col = dataset_state$class_col,
+        cols_dict = dataset_state$cols
+      )
+    }, error = function(e) {
+      showNotification(paste("Analysis calculation error:", conditionMessage(e)), type = "error")
+      NULL
+    })
+    
     if (!is.null(res)) {
       active_model(res)
+      latest_analysis$method <- input$method
+      latest_analysis$keys <- feats
+      latest_analysis$standardize <- input$standardize
+      latest_analysis$dataset_name <- dataset_state$name
+      latest_analysis$num_samples <- nrow(dataset_state$raw)
+      latest_analysis$res <- res
+      latest_analysis$timestamp <- Sys.time()
+      showNotification(sprintf("%s analysis completed successfully.", toupper(input$method)), type = "message")
     }
   })
   
-  # Dynamic updates to Feature Contributions Dropdown choices
+  # Dynamic updates to PCA Component Dropdown choices
   observe({
     res <- active_model()
     req(res)
-    m <- input$method
-    
-    if (m == "pca") {
-      n_comps <- length(res$selected_keys)
-      comp_choices <- paste0("PC", seq_len(n_comps))
-      curr_sel <- if (input$contrib_comp %in% comp_choices) input$contrib_comp else "PC1"
-      updateSelectInput(session, "contrib_comp", choices = comp_choices, selected = curr_sel)
-    } else {
-      n_disc <- length(res$lda_trace_pct)
-      comp_choices <- paste0("LD", seq_len(n_disc))
-      curr_sel <- if (input$contrib_comp %in% comp_choices) input$contrib_comp else "LD1"
-      updateSelectInput(session, "contrib_comp", choices = comp_choices, selected = curr_sel)
-    }
+    n_comps <- length(res$selected_keys)
+    comp_choices <- paste0("PC", seq_len(n_comps))
+    curr_sel <- if (!is.null(input$pca_contrib_comp) && input$pca_contrib_comp %in% comp_choices) input$pca_contrib_comp else "PC1"
+    updateSelectInput(session, "pca_contrib_comp", choices = comp_choices, selected = curr_sel)
   })
   
-  # Validation Alert banner
+  # Dynamic updates to LDA Component Dropdown choices
+  observe({
+    res <- active_model()
+    req(res)
+    n_disc <- length(res$lda_trace_pct)
+    comp_choices <- paste0("LD", seq_len(n_disc))
+    curr_sel <- if (!is.null(input$lda_contrib_comp) && input$lda_contrib_comp %in% comp_choices) input$lda_contrib_comp else "LD1"
+    updateSelectInput(session, "lda_contrib_comp", choices = comp_choices, selected = curr_sel)
+  })
+  
+  # Validation Alert banner (Null-Safe)
   output$validation_alert <- renderUI({
-    if (length(input$selected_features) < 2) {
+    if (!is.null(input$selected_features) && length(input$selected_features) < 2) {
       div(class = "studio-alert-warning",
         strong("Input Warning: "),
         "At least 2 features are required to construct a 2D projection. Please select 2 or more features and click 'Run Analysis'."
@@ -1389,111 +1648,138 @@ server <- function(input, output, session) {
     }
   })
   
-  # Dynamic Card Titles & Subtitles
+  # Dynamic Card Titles & Subtitles for Main Scatter Plot in Tab 1
   output$scatter_card_title <- renderText({
-    if (input$method == "pca") "PCA Analysis" else "LDA Analysis"
+    if (input$method == "pca") "PCA Projection" else "LDA Projection"
   })
   output$scatter_card_subtitle <- renderText({
-    if (input$method == "pca") "PC1 vs PC2 Scatter Plot" else "LD1 vs LD2 Scatter Plot"
-  })
-  
-  output$variance_card_title <- renderText({
-    if (input$method == "pca") "Explained Variance (PCA)" else "Discriminant Variance (LDA)"
-  })
-  
-  output$contrib_card_title <- renderText({
-    if (input$method == "pca") "Feature Contributions (PCA)" else "Feature Contributions (LDA)"
-  })
-  
-  output$contrib_info_desc <- renderText({
-    if (input$method == "pca") {
-      "Relative absolute eigenvector loading |w_j| on the selected principal component."
-    } else {
-      "Relative absolute scaling coefficient |c_j| on the selected linear discriminant."
-    }
+    if (input$method == "pca") "PC1 vs PC2 Scatter Plot (Unsupervised)" else "LD1 vs LD2 Scatter Plot (Supervised Separation)"
   })
   
   # ----------------------------------------------------------------------------
-  # PLOT 1: MAIN SCATTER PLOT (PCA or LDA)
+  # SHARED ELEGANT ACADEMIC GGPLOT THEME
+  # ----------------------------------------------------------------------------
+  theme_studio <- function(base_size = 12) {
+    theme_minimal(base_size = base_size) +
+      theme(
+        plot.background       = element_rect(fill = "#FFFFFF", color = NA),
+        panel.background      = element_rect(fill = "#FFFFFF", color = NA),
+        panel.grid.minor      = element_blank(),
+        panel.grid.major      = element_line(color = "#F1F5F9", linewidth = 0.5),
+        axis.title.x          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(t = 6)),
+        axis.title.y          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(r = 6)),
+        axis.text             = element_text(color = "#64748B", size = base_size - 1.5),
+        legend.position       = "top",
+        legend.justification  = "center",
+        legend.title          = element_text(face = "bold", color = "#0F172A", size = base_size - 1.5),
+        legend.text           = element_text(color = "#334155", size = base_size - 1.5),
+        legend.key            = element_blank(),
+        legend.background     = element_blank(),
+        legend.box.background = element_blank(),
+        legend.margin         = margin(0, 0, 4, 0),
+        plot.margin           = margin(6, 12, 6, 12)
+      )
+  }
+  
+  # Helper: Class Palette Builder
+  get_class_palette <- function() {
+    classes <- levels(dataset_state$raw[[dataset_state$class_col]])
+    if (all(classes %in% names(cultivar_colors_default))) {
+      cultivar_colors_default[classes]
+    } else {
+      curated_colors <- c("#315DEB", "#E64980", "#8055C7", "#10B981", "#F59E0B", "#06B6D4")
+      setNames(curated_colors[seq_along(classes)], classes)
+    }
+  }
+  
+  # ----------------------------------------------------------------------------
+  # TAB 1: MAIN SCATTER PLOT (PCA or LDA)
   # ----------------------------------------------------------------------------
   build_scatter_plot <- function() {
     res <- active_model()
     req(res)
     m <- input$method
-    
-    # Determine color palette for classes
-    classes <- levels(dataset_state$raw[[dataset_state$class_col]])
-    if (length(classes) == 3 && all(classes %in% names(cultivar_colors_default))) {
-      pal <- cultivar_colors_default
-    } else {
-      curated_colors <- c("#2563eb", "#f97316", "#9333ea", "#10b981", "#ef4444", "#06b6d4")
-      pal <- setNames(curated_colors[seq_along(classes)], classes)
-    }
+    distinguish <- isTRUE(input$distinguish_split)
+    pal <- get_class_palette()
     
     if (m == "pca") {
       df <- res$pca_scores_df
       pct1 <- res$pca_var_pct[1]
-      pct2 <- res$pca_var_pct[2]
+      pct2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
       
-      ggplot(df, aes(x = PC1, y = PC2, color = Cultivar, fill = Cultivar)) +
-        geom_hline(yintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.5) +
-        geom_vline(xintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.5) +
-        stat_ellipse(geom = "polygon", alpha = 0.12, level = 0.95, show.legend = FALSE, color = NA) +
-        geom_point(aes(shape = Split), size = 3.6, alpha = 0.88, stroke = 0.8) +
-        scale_color_manual(values = pal) +
-        scale_fill_manual(values = pal) +
-        scale_shape_manual(values = split_shapes) +
-        theme_minimal(base_size = 13) +
-        theme(
-          legend.position = "top",
-          legend.box = "horizontal",
-          legend.title = element_text(face = "bold", size = 11, color = "#0f2744"),
-          legend.text = element_text(size = 10, color = "#334155"),
-          panel.grid.minor = element_blank(),
-          panel.grid.major = element_line(color = "#f1f5f9", linetype = "dashed"),
-          axis.title = element_text(face = "bold", size = 11, color = "#0f2744"),
-          axis.text = element_text(color = "#64748b", size = 10),
-          plot.margin = margin(8, 12, 8, 12)
+      p <- ggplot(df, aes(x = PC1, y = PC2)) +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+        geom_vline(xintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+        stat_ellipse(geom = "polygon", aes(fill = Cultivar), alpha = 0.08, level = 0.95, show.legend = FALSE, color = NA)
+      
+      if (distinguish) {
+        p <- p + geom_point(aes(fill = Cultivar, shape = Split), size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_shape_manual(name = "Partition:", values = c("Training (70%)" = 21, "Testing (30%)" = 24))
+      } else {
+        p <- p + geom_point(aes(fill = Cultivar), shape = 21, size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88)
+      }
+      
+      p <- p +
+        scale_fill_manual(name = "Wine Class:", values = pal) +
+        guides(
+          fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
         ) +
+        theme_studio(base_size = 12) +
         labs(
-          x = sprintf("PC1 (%.2f%%)", pct1),
-          y = sprintf("PC2 (%.2f%%)", pct2),
-          color = "Class:",
-          fill  = "Class:",
-          shape = "Partition:"
+          x = sprintf("PC1 (%.2f%% Explained Variance)", pct1),
+          y = sprintf("PC2 (%.2f%% Explained Variance)", pct2)
         )
+      return(p)
     } else {
       df <- res$lda_scores_df
-      pct1 <- res$lda_trace_pct[1]
-      pct2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
       
-      ggplot(df, aes(x = LD1, y = LD2, color = Cultivar, fill = Cultivar)) +
-        geom_hline(yintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.5) +
-        geom_vline(xintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.5) +
-        stat_ellipse(geom = "polygon", alpha = 0.12, level = 0.95, show.legend = FALSE, color = NA) +
-        geom_point(aes(shape = Split), size = 3.6, alpha = 0.88, stroke = 0.8) +
-        scale_color_manual(values = pal) +
-        scale_fill_manual(values = pal) +
-        scale_shape_manual(values = split_shapes) +
-        theme_minimal(base_size = 13) +
-        theme(
-          legend.position = "top",
-          legend.box = "horizontal",
-          legend.title = element_text(face = "bold", size = 11, color = "#0f2744"),
-          legend.text = element_text(size = 10, color = "#334155"),
-          panel.grid.minor = element_blank(),
-          panel.grid.major = element_line(color = "#f1f5f9", linetype = "dashed"),
-          axis.title = element_text(face = "bold", size = 11, color = "#0f2744"),
-          axis.text = element_text(color = "#64748b", size = 10),
-          plot.margin = margin(8, 12, 8, 12)
+      # If LD2 is not available (e.g. 1 discriminant axis only)
+      if (!("LD2" %in% colnames(df)) || length(res$lda_trace_pct) < 2) {
+        pct1 <- if (length(res$lda_trace_pct) >= 1) res$lda_trace_pct[1] else 100
+        p <- ggplot(df, aes(x = LD1, y = 0)) +
+          geom_hline(yintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+          geom_vline(xintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+          geom_point(aes(fill = Cultivar), shape = 21, size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88,
+                     position = position_jitter(height = 0.05, seed = 42)) +
+          scale_fill_manual(name = "Wine Class:", values = pal) +
+          guides(
+            fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
+          ) +
+          theme_studio(base_size = 12) +
+          theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+          labs(
+            x = sprintf("LD1 (%.2f%% Between-Class Trace)", pct1),
+            y = "1D Projection (LD2 not available)"
+          )
+        return(p)
+      }
+      
+      pct1 <- res$lda_trace_pct[1]
+      pct2 <- res$lda_trace_pct[2]
+      
+      p <- ggplot(df, aes(x = LD1, y = LD2)) +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+        geom_vline(xintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
+        stat_ellipse(geom = "polygon", aes(fill = Cultivar), alpha = 0.08, level = 0.95, show.legend = FALSE, color = NA)
+      
+      if (distinguish) {
+        p <- p + geom_point(aes(fill = Cultivar, shape = Split), size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_shape_manual(name = "Partition:", values = c("Training (70%)" = 21, "Testing (30%)" = 24))
+      } else {
+        p <- p + geom_point(aes(fill = Cultivar), shape = 21, size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88)
+      }
+      
+      p <- p +
+        scale_fill_manual(name = "Wine Class:", values = pal) +
+        guides(
+          fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
         ) +
+        theme_studio(base_size = 12) +
         labs(
           x = sprintf("LD1 (%.2f%% Between-Class Trace)", pct1),
-          y = sprintf("LD2 (%.2f%% Between-Class Trace)", pct2),
-          color = "Class:",
-          fill  = "Class:",
-          shape = "Partition:"
+          y = sprintf("LD2 (%.2f%% Between-Class Trace)", pct2)
         )
+      return(p)
     }
   }
   
@@ -1502,41 +1788,88 @@ server <- function(input, output, session) {
   }, res = 100)
   
   # ----------------------------------------------------------------------------
-  # PLOT 2: SCREE PLOT (Displayed only for PCA)
+  # TAB 2: INSIGHTS (PCA) - VARIANCE SUMMARY & SCREE PLOT
   # ----------------------------------------------------------------------------
+  output$ui_pca_variance_stats <- renderUI({
+    res <- active_model()
+    req(res)
+    v1 <- res$pca_var_pct[1]
+    v2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
+    v_tot <- v1 + v2
+    
+    div(class = "metric-chips-row",
+      div(class = "metric-chip",
+        span(class = "metric-chip-label", "PC1 Variance:"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v1))
+      ),
+      div(class = "metric-chip",
+        span(class = "metric-chip-label", "PC2 Variance:"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v2))
+      ),
+      div(class = "metric-chip metric-chip-primary",
+        span(class = "metric-chip-label", "Combined 2D (PC1+PC2):"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v_tot))
+      )
+    )
+  })
+  
+  output$table_pca_variance <- renderUI({
+    res <- active_model()
+    req(res)
+    
+    var_pcts <- res$pca_var_pct
+    cum_pcts <- cumsum(var_pcts)
+    n_comps <- length(var_pcts)
+    
+    table_rows <- lapply(seq_len(n_comps), function(i) {
+      tags$tr(
+        tags$td(strong(paste0("PC", i))),
+        tags$td(sprintf("%.2f%%", var_pcts[i])),
+        tags$td(sprintf("%.2f%%", cum_pcts[i]))
+      )
+    })
+    
+    tags$table(class = "clean-table",
+      tags$thead(
+        tags$tr(
+          tags$th("Component"),
+          tags$th("Explained Variance"),
+          tags$th("Cumulative Variance")
+        )
+      ),
+      tags$tbody(table_rows)
+    )
+  })
+  
+  # Scree Plot (Simple Blue Bars #315DEB, No Curve/Connecting Line)
   build_scree_plot <- function() {
     res <- active_model()
     req(res)
     
-    var_ratios <- res$pca_var_pct / 100
-    n_comps <- length(var_ratios)
+    var_pcts <- res$pca_var_pct
+    n_comps <- length(var_pcts)
     comp_names <- factor(paste0("PC", seq_len(n_comps)), levels = paste0("PC", seq_len(n_comps)))
     
     scree_df <- data.frame(
       Component = comp_names,
-      Ratio = var_ratios,
-      Index = seq_len(n_comps),
-      Label = ifelse(seq_len(n_comps) <= min(5, n_comps), sprintf("%.3f", var_ratios), "")
+      Pct = var_pcts,
+      Label = ifelse(seq_len(n_comps) <= min(4, n_comps), sprintf("%.1f%%", var_pcts), "")
     )
     
-    y_top <- max(0.4, max(var_ratios) * 1.25)
+    y_max <- min(100, max(var_pcts) * 1.25)
+    if (y_max < 20) y_max <- 20
     
-    ggplot(scree_df, aes(x = Component, y = Ratio, group = 1)) +
-      geom_area(fill = "#dbeafe", alpha = 0.5) +
-      geom_line(color = "#2563eb", linewidth = 1.1) +
-      geom_point(color = "#2563eb", fill = "#ffffff", shape = 21, size = 3.2, stroke = 1.5) +
-      geom_text(aes(label = Label), vjust = -0.9, size = 3.4, fontface = "bold", color = "#1e3a8a") +
-      scale_y_continuous(limits = c(0, y_top), breaks = seq(0, 1, 0.2)) +
-      theme_minimal(base_size = 12) +
-      theme(
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#e2e8f0", linetype = "dashed"),
-        axis.title = element_text(face = "bold", color = "#0f2744", size = 11),
-        axis.text = element_text(color = "#64748b", size = 10),
-        plot.margin = margin(6, 12, 6, 12)
+    ggplot(scree_df, aes(x = Component, y = Pct)) +
+      geom_col(fill = "#315DEB", width = 0.52, alpha = 0.92) +
+      geom_text(aes(label = Label), vjust = -0.5, size = 3.2, fontface = "bold", color = "#0F172A") +
+      scale_y_continuous(
+        limits = c(0, y_max),
+        labels = function(x) paste0(x, "%"),
+        expand = expansion(mult = c(0, 0.05))
       ) +
-      labs(x = "Principal Component", y = "Explained Variance Ratio")
+      theme_studio(base_size = 11.5) +
+      theme(panel.grid.major.x = element_blank()) +
+      labs(x = "Principal Component", y = "Explained Variance (%)")
   }
   
   output$plot_scree <- renderPlot({
@@ -1544,22 +1877,94 @@ server <- function(input, output, session) {
   }, res = 100)
   
   # ----------------------------------------------------------------------------
-  # PLOT 3: LDA DISCRIMINANT VARIANCE BAR CHART (Displayed for LDA below scatter)
+  # TAB 2: INSIGHTS (PCA) - RESTORED CLEAN FEATURE CONTRIBUTIONS
   # ----------------------------------------------------------------------------
+  output$ui_pca_feature_contributions <- renderUI({
+    res <- active_model()
+    req(res)
+    comp <- input$pca_contrib_comp
+    req(comp %in% colnames(res$pca_fit$rotation))
+    
+    raw_vals <- res$pca_fit$rotation[, comp]
+    f_keys <- res$selected_keys
+    f_cols <- res$selected_cols
+    f_names <- dataset_state$display_names[f_keys]
+    
+    val_vec <- as.numeric(raw_vals[f_cols])
+    
+    df_contrib <- data.frame(
+      Name = unname(f_names),
+      Value = val_vec,
+      AbsValue = abs(val_vec),
+      stringsAsFactors = FALSE
+    )
+    
+    # Sort descending by absolute loading magnitude
+    df_contrib <- df_contrib[order(df_contrib$AbsValue, decreasing = TRUE), ]
+    
+    max_abs <- max(df_contrib$AbsValue, na.rm = TRUE)
+    if (is.na(max_abs) || max_abs == 0) max_abs <- 1
+    
+    rows <- lapply(seq_len(nrow(df_contrib)), function(i) {
+      v <- df_contrib$Value[i]
+      pct_width <- max(2, (abs(v) / max_abs) * 100)
+      val_fmt <- sprintf("%+.3f", v)
+      bar_color <- if (v >= 0) "#315DEB" else "#E64980"
+      
+      div(class = "feature-contrib-row",
+        div(class = "contrib-name", title = df_contrib$Name[i], df_contrib$Name[i]),
+        div(class = "contrib-bar-track",
+          div(class = "contrib-bar-fill", 
+              style = sprintf("width: %.1f%%; background-color: %s;", pct_width, bar_color))
+        ),
+        div(class = "contrib-val", 
+            style = if (v >= 0) "color: #315DEB;" else "color: #E64980;",
+            val_fmt)
+      )
+    })
+    
+    div(class = "feature-contrib-list", rows)
+  })
+  
+  # ----------------------------------------------------------------------------
+  # TAB 2: INSIGHTS (LDA) - DISCRIMINANT VARIANCE BAR CHART
+  # ----------------------------------------------------------------------------
+  output$ui_lda_variance_stats <- renderUI({
+    res <- active_model()
+    req(res)
+    v1 <- if (length(res$lda_trace_pct) >= 1) res$lda_trace_pct[1] else 100
+    v2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
+    v_tot <- v1 + v2
+    
+    div(class = "metric-chips-row",
+      div(class = "metric-chip",
+        span(class = "metric-chip-label", "LD1 Trace:"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v1))
+      ),
+      div(class = "metric-chip",
+        span(class = "metric-chip-label", "LD2 Trace:"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v2))
+      ),
+      div(class = "metric-chip metric-chip-primary",
+        span(class = "metric-chip-label", "Total Between-Class Trace:"),
+        span(class = "metric-chip-val", sprintf("%.2f%%", v_tot))
+      )
+    )
+  })
+  
   build_lda_variance_plot <- function() {
     res <- active_model()
     req(res)
     
     trace_pcts <- res$lda_trace_pct
-    
-    # If the fitted model cannot provide valid proportions, display a helpful message
     if (is.null(trace_pcts) || length(trace_pcts) == 0 || any(is.na(trace_pcts))) {
       return(
         ggplot() +
           annotate("text", x = 0.5, y = 0.5, 
                    label = "Discriminant variance proportions could not be computed for this configuration.",
-                   color = "#64748b", size = 4) +
-          theme_void()
+                   color = "#64748B", size = 3.8) +
+          theme_void() +
+          theme(plot.background = element_rect(fill = "#FFFFFF", color = NA))
       )
     }
     
@@ -1574,21 +1979,17 @@ server <- function(input, output, session) {
     
     y_max <- max(100, max(trace_pcts) * 1.25)
     
-    ggplot(lda_df, aes(x = Discriminant, y = TracePct, fill = Discriminant)) +
-      geom_col(width = 0.45, fill = "#9333ea", alpha = 0.88, color = "#7e22ce", linewidth = 0.8) +
-      geom_text(aes(label = Label), vjust = -0.7, size = 4.2, fontface = "bold", color = "#581c87") +
-      scale_y_continuous(limits = c(0, y_max), breaks = seq(0, 100, 20),
-                         labels = function(x) paste0(x, "%")) +
-      theme_minimal(base_size = 12) +
-      theme(
-        legend.position = "none",
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#e2e8f0", linetype = "dashed"),
-        axis.title = element_text(face = "bold", color = "#0f2744", size = 11),
-        axis.text = element_text(color = "#475569", size = 10.5),
-        plot.margin = margin(6, 16, 6, 16)
+    ggplot(lda_df, aes(x = Discriminant, y = TracePct)) +
+      geom_col(fill = "#315DEB", width = 0.40, alpha = 0.92) +
+      geom_text(aes(label = Label), vjust = -0.5, size = 3.4, fontface = "bold", color = "#0F172A") +
+      scale_y_continuous(
+        limits = c(0, y_max),
+        breaks = seq(0, 100, 20),
+        labels = function(x) paste0(x, "%"),
+        expand = expansion(mult = c(0, 0.05))
       ) +
+      theme_studio(base_size = 11.5) +
+      theme(panel.grid.major.x = element_blank()) +
       labs(
         x = "Linear Discriminant Function",
         y = "Between-Class Variance Proportion (%)"
@@ -1600,158 +2001,49 @@ server <- function(input, output, session) {
   }, res = 100)
   
   # ----------------------------------------------------------------------------
-  # CARD: CIRCULAR GAUGES (PCA Explained Variance / LDA Discriminant Variance)
+  # TAB 2: INSIGHTS (LDA) - RESTORED CLEAN FEATURE CONTRIBUTIONS
   # ----------------------------------------------------------------------------
-  output$ui_circular_gauges <- renderUI({
+  output$ui_lda_feature_contributions <- renderUI({
     res <- active_model()
     req(res)
-    m <- input$method
+    comp <- input$lda_contrib_comp
+    req(comp %in% colnames(res$lda_fit$scaling))
     
-    circ <- 251.33 # Circumference for r=40
-    
-    if (m == "pca") {
-      v1 <- res$pca_var_pct[1]
-      v2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
-      v_tot <- v1 + v2
-      
-      off1 <- circ * (1 - v1 / 100)
-      off2 <- circ * (1 - v2 / 100)
-      off_tot <- circ * (1 - v_tot / 100)
-      
-      div(class = "gauges-container",
-        # Gauge PC1
-        div(class = "gauge-item",
-          div(class = "gauge-header-label", "PC1"),
-          HTML(sprintf('
-            <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40" />
-              <circle class="gauge-fill gauge-fill-pc1" cx="50" cy="50" r="40"
-                      style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-              <text class="gauge-text" x="50" y="50">%.2f%%</text>
-            </svg>
-          ', off1, v1))
-        ),
-        # Gauge PC2
-        div(class = "gauge-item",
-          div(class = "gauge-header-label", "PC2"),
-          HTML(sprintf('
-            <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40" />
-              <circle class="gauge-fill gauge-fill-pc2" cx="50" cy="50" r="40"
-                      style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-              <text class="gauge-text" x="50" y="50">%.2f%%</text>
-            </svg>
-          ', off2, v2))
-        ),
-        # Gauge Total
-        div(class = "gauge-item",
-          div(class = "gauge-header-label", "Combined"),
-          HTML(sprintf('
-            <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40" />
-              <circle class="gauge-fill gauge-fill-total" cx="50" cy="50" r="40"
-                      style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-              <text class="gauge-text" x="50" y="50">%.2f%%</text>
-            </svg>
-          ', off_tot, v_tot)),
-          div(class = "gauge-sub-label", "(PC1 + PC2)")
-        )
-      )
-    } else {
-      v1 <- res$lda_trace_pct[1]
-      v2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
-      v_tot <- v1 + v2
-      
-      off1 <- circ * (1 - v1 / 100)
-      off2 <- circ * (1 - v2 / 100)
-      off_tot <- circ * (1 - v_tot / 100)
-      
-      div(
-        div(class = "gauges-container",
-          # Gauge LD1
-          div(class = "gauge-item",
-            div(class = "gauge-header-label", "LD1"),
-            HTML(sprintf('
-              <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-                <circle class="gauge-track" cx="50" cy="50" r="40" />
-                <circle class="gauge-fill gauge-fill-pc1" cx="50" cy="50" r="40"
-                        style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-                <text class="gauge-text" x="50" y="50">%.2f%%</text>
-              </svg>
-            ', off1, v1))
-          ),
-          # Gauge LD2
-          div(class = "gauge-item",
-            div(class = "gauge-header-label", "LD2"),
-            HTML(sprintf('
-              <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-                <circle class="gauge-track" cx="50" cy="50" r="40" />
-                <circle class="gauge-fill gauge-fill-pc2" cx="50" cy="50" r="40"
-                        style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-                <text class="gauge-text" x="50" y="50">%.2f%%</text>
-              </svg>
-            ', off2, v2))
-          ),
-          # Gauge Total
-          div(class = "gauge-item",
-            div(class = "gauge-header-label", "Combined"),
-            HTML(sprintf('
-              <svg class="gauge-svg" width="82" height="82" viewBox="0 0 100 100">
-                <circle class="gauge-track" cx="50" cy="50" r="40" />
-                <circle class="gauge-fill gauge-fill-total" cx="50" cy="50" r="40"
-                        style="stroke-dasharray: 251.33; stroke-dashoffset: %.2f;" />
-                <text class="gauge-text" x="50" y="50">%.1f%%</text>
-              </svg>
-            ', off_tot, v_tot)),
-            div(class = "gauge-sub-label", "(LD1 + LD2)")
-          )
-        ),
-        div(style = "font-size: 11px; color: #64748b; text-align: center; margin-top: 6px; padding: 0 4px;",
-            "Between-class discriminant trace proportion (Fisher's criterion)")
-      )
-    }
-  })
-  
-  # ----------------------------------------------------------------------------
-  # CARD: FEATURE CONTRIBUTIONS (Single Dynamic Panel)
-  # ----------------------------------------------------------------------------
-  output$ui_feature_contributions <- renderUI({
-    res <- active_model()
-    req(res)
-    m <- input$method
-    comp <- input$contrib_comp
-    
-    if (m == "pca") {
-      req(comp %in% colnames(res$pca_fit$rotation))
-      loadings <- res$pca_fit$rotation[, comp]
-      weights <- abs(loadings)
-    } else {
-      req(comp %in% colnames(res$lda_fit$scaling))
-      scalings <- res$lda_fit$scaling[, comp]
-      weights <- abs(scalings)
-    }
-    
+    raw_vals <- res$lda_fit$scaling[, comp]
     f_keys <- res$selected_keys
+    f_cols <- res$selected_cols
     f_names <- dataset_state$display_names[f_keys]
     
-    # Sort features by contribution magnitude
-    order_idx <- order(weights, decreasing = TRUE)
-    sorted_weights <- weights[order_idx]
-    sorted_names <- f_names[order_idx]
+    val_vec <- as.numeric(raw_vals[f_cols])
     
-    max_w <- max(sorted_weights)
-    if (max_w == 0) max_w <- 1
+    df_contrib <- data.frame(
+      Name = unname(f_names),
+      Value = val_vec,
+      AbsValue = abs(val_vec),
+      stringsAsFactors = FALSE
+    )
     
-    rows <- lapply(seq_along(sorted_weights), function(i) {
-      pct_width <- (sorted_weights[i] / max_w) * 100
-      val_fmt <- sprintf("%.2f", sorted_weights[i])
+    # Sort descending by absolute coefficient magnitude
+    df_contrib <- df_contrib[order(df_contrib$AbsValue, decreasing = TRUE), ]
+    
+    max_abs <- max(df_contrib$AbsValue, na.rm = TRUE)
+    if (is.na(max_abs) || max_abs == 0) max_abs <- 1
+    
+    rows <- lapply(seq_len(nrow(df_contrib)), function(i) {
+      v <- df_contrib$Value[i]
+      pct_width <- max(2, (abs(v) / max_abs) * 100)
+      val_fmt <- sprintf("%+.3f", v)
+      bar_color <- if (v >= 0) "#315DEB" else "#E64980"
       
       div(class = "feature-contrib-row",
-        div(class = "contrib-name", title = sorted_names[i], sorted_names[i]),
+        div(class = "contrib-name", title = df_contrib$Name[i], df_contrib$Name[i]),
         div(class = "contrib-bar-track",
-          div(class = "contrib-bar-fill", style = sprintf("width: %.1f%%;", pct_width))
+          div(class = "contrib-bar-fill", 
+              style = sprintf("width: %.1f%%; background-color: %s;", pct_width, bar_color))
         ),
-        div(class = "contrib-val", val_fmt)
+        div(class = "contrib-val", 
+            style = if (v >= 0) "color: #315DEB;" else "color: #E64980;",
+            val_fmt)
       )
     })
     
@@ -1759,16 +2051,145 @@ server <- function(input, output, session) {
   })
   
   # ----------------------------------------------------------------------------
-  # BOTTOM: TRANSFORMED DATA PREVIEW (FIRST 5 ROWS)
+  # TAB 3: OVERVIEW - METHOD-AWARE STATE & METRIC CARDS
   # ----------------------------------------------------------------------------
-  output$table_transformed_preview <- renderUI({
-    res <- active_model()
+  settings_changed <- reactive({
+    method_diff <- !is.null(input$method) && input$method != latest_analysis$method
+    feat_diff <- !is.null(input$selected_features) && !setequal(input$selected_features, latest_analysis$keys)
+    std_diff <- !is.null(input$standardize) && input$standardize != latest_analysis$standardize
+    method_diff || feat_diff || std_diff
+  })
+  
+  output$overview_sync_notice <- renderUI({
+    if (settings_changed()) {
+      curr_m_desc <- if (input$method == "pca") "PCA" else "LDA"
+      last_m_desc <- if (latest_analysis$method == "pca") "PCA" else "LDA"
+      div(class = "studio-alert-notice",
+        strong("Input Modification Notice: "),
+        sprintf("Settings in the Analysis tab have changed (Method: %s selected, Run pending). The summary and data below reflect the latest completed %s analysis run. Click 'Run Analysis' in the Analysis tab to recalculate and display %s results.",
+                curr_m_desc, last_m_desc, curr_m_desc)
+      )
+    } else {
+      NULL
+    }
+  })
+  
+  # Card 1: Active Method
+  output$overview_method_val <- renderText({
+    if (latest_analysis$method == "pca") "PCA (Unsupervised)" else "LDA (Supervised)"
+  })
+  
+  output$overview_method_desc <- renderText({
+    if (settings_changed() && input$method != latest_analysis$method) {
+      sprintf("Active Run: %s | Current Selected: %s (Click 'Run Analysis' to sync)",
+              toupper(latest_analysis$method), toupper(input$method))
+    } else {
+      if (latest_analysis$method == "pca") {
+        "Unsupervised coordinate transformation maximizing total feature variance"
+      } else {
+        "Supervised coordinate transformation maximizing cultivar class separation"
+      }
+    }
+  })
+  
+  output$overview_method_badge_ui <- renderUI({
+    badge_cls <- if (settings_changed() && input$method != latest_analysis$method) "overview-card-badge overview-card-badge-stale" else "overview-card-badge"
+    badge_text <- if (isTRUE(latest_analysis$standardize)) "Z-Score Standardized" else "Mean-Centered Only"
+    span(class = badge_cls, badge_text)
+  })
+  
+  # Card 2: Dataset Information
+  output$overview_dataset_val <- renderText({
+    latest_analysis$dataset_name
+  })
+  
+  output$overview_dataset_desc <- renderText({
+    sprintf("%d total observations • %d features selected",
+            latest_analysis$num_samples, length(latest_analysis$keys))
+  })
+  
+  output$overview_dataset_badge <- renderText({
+    n_cls <- length(unique(dataset_state$raw[[dataset_state$class_col]]))
+    sprintf("%d Distinct Cultivar Classes", n_cls)
+  })
+  
+  # Card 3: Dynamic Method-Specific Metric Card
+  output$overview_metric_card_label <- renderText({
+    if (latest_analysis$method == "pca") {
+      "PCA Variance Explained (2D)"
+    } else {
+      "LDA Discriminant Trace (2D)"
+    }
+  })
+  
+  output$overview_metric_card_val <- renderText({
+    res <- latest_analysis$res
     req(res)
-    m <- input$method
+    if (latest_analysis$method == "pca") {
+      v1 <- res$pca_var_pct[1]
+      v2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
+      sprintf("%.2f%% Total Variance", v1 + v2)
+    } else {
+      t1 <- if (length(res$lda_trace_pct) >= 1) res$lda_trace_pct[1] else 100
+      t2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
+      sprintf("%.2f%% Between-Class Trace", t1 + t2)
+    }
+  })
+  
+  output$overview_metric_card_desc <- renderText({
+    res <- latest_analysis$res
+    req(res)
+    if (latest_analysis$method == "pca") {
+      v1 <- res$pca_var_pct[1]
+      v2 <- if (length(res$pca_var_pct) >= 2) res$pca_var_pct[2] else 0
+      sprintf("PC1: %.2f%% • PC2: %.2f%% of total feature variance", v1, v2)
+    } else {
+      t1 <- if (length(res$lda_trace_pct) >= 1) res$lda_trace_pct[1] else 100
+      t2 <- if (length(res$lda_trace_pct) >= 2) res$lda_trace_pct[2] else 0
+      sprintf("LD1: %.2f%% • LD2: %.2f%% between-class discriminant trace", t1, t2)
+    }
+  })
+  
+  output$overview_metric_card_badge_ui <- renderUI({
+    if (latest_analysis$method == "pca") {
+      span(class = "overview-card-badge", "Unsupervised Eigen-Projection")
+    } else {
+      span(class = "overview-card-badge", "Supervised Fisher Criterion")
+    }
+  })
+  
+  # Card 4: Partition
+  output$overview_split_desc <- renderText({
+    sprintf("%d Training (70.2%%) • %d Testing (29.8%%)",
+            nrow(dataset_state$train), nrow(dataset_state$test))
+  })
+  
+  # Bottom Table: Transformed Data Preview (Method-Aware)
+  output$overview_table_title <- renderText({
+    m_name <- if (latest_analysis$method == "pca") "PCA" else "LDA"
+    sprintf("Transformed Data Preview (%s Coordinates)", m_name)
+  })
+  
+  output$overview_table_subtitle <- renderText({
+    res <- latest_analysis$res
+    req(res)
+    m_name <- if (latest_analysis$method == "pca") "PCA" else "LDA"
+    df <- if (latest_analysis$method == "pca") res$pca_scores_df else res$lda_scores_df
+    sprintf("Displaying first 10 observations of %d total records projected onto %s and %s (latest completed %s run):",
+            nrow(df), 
+            if (latest_analysis$method == "pca") "PC1" else "LD1",
+            if (latest_analysis$method == "pca") "PC2" else "LD2",
+            m_name)
+  })
+  
+  output$table_transformed_preview <- renderUI({
+    res <- latest_analysis$res
+    req(res)
+    m <- latest_analysis$method
     
     if (m == "pca") {
       df <- res$pca_scores_df
-      sub_df <- head(df, 5)
+      sub_df <- head(df, 10)
       
       table_rows <- lapply(seq_len(nrow(sub_df)), function(i) {
         c_badge <- "badge-cultivar-1"
@@ -1791,7 +2212,7 @@ server <- function(input, output, session) {
             tags$th("#"),
             tags$th("PC1"),
             tags$th("PC2"),
-            tags$th("Class"),
+            tags$th("Wine Cultivar"),
             tags$th("Partition")
           )
         ),
@@ -1799,7 +2220,7 @@ server <- function(input, output, session) {
       )
     } else {
       df <- res$lda_scores_df
-      sub_df <- head(df, 5)
+      sub_df <- head(df, 10)
       
       table_rows <- lapply(seq_len(nrow(sub_df)), function(i) {
         c_badge <- "badge-cultivar-1"
@@ -1810,7 +2231,7 @@ server <- function(input, output, session) {
         tags$tr(
           tags$td(i),
           tags$td(sprintf("%.4f", sub_df$LD1[i])),
-          tags$td(sprintf("%.4f", sub_df$LD2[i])),
+          tags$td(if ("LD2" %in% colnames(sub_df)) sprintf("%.4f", sub_df$LD2[i]) else "N/A"),
           tags$td(span(class = c_badge, as.character(sub_df$Cultivar[i]))),
           tags$td(span(class = s_badge, as.character(sub_df$Split[i])))
         )
@@ -1822,7 +2243,7 @@ server <- function(input, output, session) {
             tags$th("#"),
             tags$th("LD1"),
             tags$th("LD2"),
-            tags$th("Class"),
+            tags$th("Wine Cultivar"),
             tags$th("Partition")
           )
         ),
@@ -1835,47 +2256,47 @@ server <- function(input, output, session) {
   # DOWNLOAD HANDLERS
   # ----------------------------------------------------------------------------
   
-  # 1. Download Current Scatter Plot PNG
+  # 1. Download Current Scatter Plot PNG (From Tab 1 Analysis)
   output$download_scatter_png <- downloadHandler(
     filename = function() {
       paste0(input$method, "_scatter_plot_", Sys.Date(), ".png")
     },
     content = function(file) {
       p <- build_scatter_plot()
-      ggsave(file, plot = p, width = 8.5, height = 5.5, dpi = 300)
+      ggsave(file, plot = p, width = 8.5, height = 5.2, dpi = 300)
     }
   )
   
-  # 2. Download Scree Plot PNG
+  # 2. Download Scree Plot PNG (From Tab 2 Insights PCA)
   output$download_scree_png <- downloadHandler(
     filename = function() {
       paste0("pca_scree_plot_", Sys.Date(), ".png")
     },
     content = function(file) {
       p <- build_scree_plot()
-      ggsave(file, plot = p, width = 8.5, height = 4.8, dpi = 300)
+      ggsave(file, plot = p, width = 8.5, height = 4.2, dpi = 300)
     }
   )
   
-  # 3. Download LDA Variance PNG
+  # 3. Download LDA Variance PNG (From Tab 2 Insights LDA)
   output$download_lda_variance_png <- downloadHandler(
     filename = function() {
       paste0("lda_discriminant_variance_", Sys.Date(), ".png")
     },
     content = function(file) {
       p <- build_lda_variance_plot()
-      ggsave(file, plot = p, width = 8.5, height = 4.8, dpi = 300)
+      ggsave(file, plot = p, width = 8.5, height = 4.2, dpi = 300)
     }
   )
   
-  # 3. Download Transformed CSV (All transformed observations)
+  # 4. Download Transformed CSV (All transformed observations from latest completed run)
   output$download_transformed_csv <- downloadHandler(
     filename = function() {
-      paste0(input$method, "_transformed_data_all_", Sys.Date(), ".csv")
+      paste0(latest_analysis$method, "_transformed_data_all_", Sys.Date(), ".csv")
     },
     content = function(file) {
-      res <- active_model()
-      df <- if (input$method == "pca") res$pca_scores_df else res$lda_scores_df
+      res <- latest_analysis$res
+      df <- if (latest_analysis$method == "pca") res$pca_scores_df else res$lda_scores_df
       write.csv(df, file, row.names = FALSE)
     }
   )

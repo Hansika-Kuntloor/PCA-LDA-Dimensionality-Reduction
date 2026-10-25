@@ -1,52 +1,90 @@
-# 🍷 Feature Extraction Studio — PCA and LDA on the Wine Dataset
+# 🍷 PCA & LDA Feature Extraction Studio
 
-An academic **R Shiny** application for feature extraction and dimensionality reduction on the Wine dataset using **Principal Component Analysis (PCA)** and **Linear Discriminant Analysis (LDA)** with a strict, leak-free **70:30 stratified train-test split** (reproducible seed `42`).
+An academic **R Shiny** application for dimensionality reduction and feature extraction on the Wine dataset using **Principal Component Analysis (PCA)** and **Linear Discriminant Analysis (LDA)** with a strict, leak-free **70:30 stratified train-test split** (reproducible seed `42`).
 
-Built with a minimal, modern white-and-sky-blue design system, the application operates as a focused single-page studio dashboard with real-time feature selection, standardization settings, optional CSV uploads, circular variance gauges, feature loading contributions, PCA-exclusive scree plots, and full CSV exports.
+The application is structured into **Three Dedicated Main Navigation Tabs**:
+1. **Analysis**: Primary inputs (method, dataset, feature checkboxes, standardization, split info) and the main projection scatter plot.
+2. **Insights**: Supporting visualisations tailored dynamically to the selected method (PCA scree plot & loadings vs. LDA discriminant variance & coefficients, with restored horizontal feature-contribution bars).
+3. **Overview**: Summary cards and transformed dataset preview with CSV download, clearly distinguishing the latest completed analysis from pending input modifications.
 
 ---
 
-## 📌 Architecture & Design Overview
+## 📌 Architecture & Tab Suite
 
-### 1. Minimal White & Sky Blue Design
-* **Header**: Title **“Feature Extraction Studio”** with subtitle **“PCA and LDA on the Wine Dataset”** and a compact dataset badge.
-* **Focused Dashboard**: Completely removes separate Dataset and Compare navigation tabs, presenting all analysis controls, visualizations, metrics, and transformed data in one cohesive view.
-* **Palette**: Minimal white cards (`#ffffff`), very light sky-blue surfaces (`#f4f8fd`), dark navy text (`#0f2744`), and dedicated cultivar accents:
-  * **Cultivar 1**: Royal Blue (`#2563eb`)
-  * **Cultivar 2**: Warm Orange (`#f97316`)
-  * **Cultivar 3**: Vibrant Purple (`#9333ea`)
-* **Partition Shapes**:
-  * **● Circles** (`shape = 21`): 70% Training partition (125 observations)
-  * **▲ Triangles** (`shape = 24`): 30% Testing partition (53 observations)
+### 1. Persistent Top Navigation Bar
+* **Positioning**: Sticky header (`position: sticky; top: 0; z-index: 1000;`) remaining visible during scrolling.
+* **Left**: Project title **“PCA & LDA Feature Extraction Studio”** with brand icon.
+* **Center**: Exactly three horizontal navigation tabs:
+  * **Analysis**
+  * **Insights**
+  * **Overview**
+* **Right**: Compact Wine Recognition dataset badge (`178 samples • 13 features • 3 classes`).
+* **Styling**: White background (`#FFFFFF`), dark navy typography (`#0F172A`), rounded subtle hover states, thin light-grey bottom border (`#E5E7EB`), and active tab highlight with primary blue (`#315DEB`).
 
-### 2. Left Control Panel
-* **Method Selector**: Segmented toggle buttons (`PCA` vs `LDA`) that update all plots, metrics, gauges, and data previews.
-* **Dataset Information**: Compact label showing dataset name, sample count (178), numerical feature count (13), and class count (3).
-* **Optional CSV Upload**: Compact `Upload CSV` button. Loads the Wine Recognition dataset automatically by default (uploading is never required). Validates uploaded files, ensures a class-label column exists for LDA, and provides a quick reset link back to the Wine dataset.
-* **Feature Selection**: Scrollable list of numeric feature checkboxes with working **Select All** and **Deselect All** controls.
-* **Standardization Setting**: Checkbox toggle to enable/disable Z-score standardization ($\mu=0, \sigma=1$) using training-only statistics.
-* **Fixed 70:30 Train-Test Split**: Visual two-tone progress bar (70% deep blue, 30% light blue) showing **125 Training** / **53 Testing** samples with seed `42`.
-* **Run Analysis Button**: Primary blue action button (`▶ Run Analysis`) recalculating models and updating views.
+---
 
-### 3. Center Analytics Panel
-* **Main Scatter Plot**:
-  * **PCA**: PC1 vs PC2 scatter plot with variance explained labels on both axes and 95% shaded confidence ellipses.
-  * **LDA**: LD1 vs LD2 scatter plot with between-class trace proportion labels on both axes.
-* **Secondary Visualization (Directly Below Scatter Plot)**:
-  * **PCA Mode**: Displays the **PCA Scree Plot** showing explained variance ratios for every principal component with numerical values labeled above points.
-  * **LDA Mode**: Displays the **LDA Discriminant Variance Bar Chart** showing separate bars for LD1 (70.29%) and LD2 (29.71%) reflecting the actual between-class discriminant variance proportions.
+### 2. Tab 1 — Analysis
+* **Left Control Panel**:
+  * **Method Selector**: Segmented toggle buttons (`PCA` vs `LDA`).
+  * **Dataset Information**: Summary identifying the Wine Recognition dataset (178 observations, 13 features, 3 classes).
+  * **CSV Upload & Reset**: `Upload CSV` button supporting custom datasets, with a quick `Reset to Wine Dataset` link.
+  * **Feature Selection**: Scrollable list of feature checkboxes with **Select All** and **Deselect All** quick links.
+  * **Standardization Setting**: Checkbox toggle to enable/disable Z-score standardization ($\mu=0, \sigma=1$) using training-only statistics.
+  * **70:30 Train-Test Split**: Visual progress bar showing **125 Training (70.2%)** and **53 Testing (29.8%)** samples (seed `42`), with an optional toggle to distinguish train/test marker shapes.
+  * **Run Analysis Button**: Primary blue action button (`▶ Run Analysis`).
+* **Right Scatter Plot Panel**:
+  * Large, high-resolution scatter plot on a white background with subtle light-grey gridlines.
+  * **PCA Mode**: Displays PC1 against PC2 with actual explained variance percentages in the axis titles and 95% shaded confidence ellipses.
+  * **LDA Mode**: Displays LD1 against LD2 with actual between-class discriminant variance percentages.
+  * **Class Palette**:
+    * **Cultivar 1**: Blue (`#315DEB`)
+    * **Cultivar 2**: Rose Pink (`#E64980`)
+    * **Cultivar 3**: Muted Purple (`#8055C7`)
+  * `Save PNG` export button.
 
-### 4. Right Metrics & Feature Contributions Panel
-* **Explained Variance (PCA) / Discriminant Variance (LDA)**:
-  * High-resolution SVG circular donut gauges for Component 1, Component 2, and Combined (Component 1 + Component 2).
-  * Shows total variance explained for PCA (PC1: 37.00%, PC2: 20.12%, Combined: 57.12%) and between-class trace for LDA (LD1: 70.29%, LD2: 29.71%, Combined: 100%).
-* **Feature Contributions**:
-  * Single dedicated panel with a dynamic dropdown to select **PC1/PC2** (for PCA) or **LD1/LD2** (for LDA).
-  * Horizontal gradient bars (`#38bdf8` to `#2563eb`) displaying relative absolute loadings $|w_j|$ or scaling coefficients $|c_j|$ with exact numerical values.
+---
 
-### 5. Bottom Transformed Data Preview
-* **Preview Table**: First 5 rows of projected scores with colored badges for Class and Train/Test partition.
-* **CSV Export**: `Download CSV` button exporting all 178 transformed observations (or all rows if custom data is loaded).
+### 3. Tab 2 — Insights
+Dynamically displays supporting visualisations according to the active method:
+
+#### A. When PCA is Selected:
+* **Explained Variance Summary**: Metric chips for PC1 (37.00%), PC2 (20.12%), and Combined 2D (57.12%), plus a compact table with Component, Explained Variance (%), and Cumulative Variance (%).
+* **PCA Scree Plot**: Clean `#315DEB` blue bar chart showing explained variance percentages across principal components without any connecting line or curve.
+* **Restored PCA Feature Contributions**:
+  * Dropdown selector for principal components (`PC1` through `PC13`).
+  * Unclipped feature names aligned neatly on the left (`155px` width).
+  * Horizontal bar tracks: **Blue (`#315DEB`)** for positive eigenvector loadings, **Rose Pink (`#E64980`)** for negative eigenvector loadings.
+  * Right-aligned signed numerical values (e.g. `+0.428`, `-0.312`) in monospace font.
+  * Sorted automatically by absolute loading magnitude, largest first.
+  * Caption: *"Blue = positive · Pink = negative · Sorted by magnitude"*.
+
+#### B. When LDA is Selected (Clean, Balanced 6/6 Layout):
+* **LDA Discriminant Variance Chart & Fisher Context**: Summary chips for LD1 (70.29%), LD2 (29.71%), and Total Between-Class Trace (100.00%), plus clean blue bars and an explanatory box detailing Fisher's criterion ($S_B / S_W$) and 98.11% out-of-sample test accuracy (the duplicate scatter plot has been removed from Insights since the primary projection is always available in Analysis).
+* **Restored LDA Feature Contributions**:
+  * Dropdown selector for discriminant functions (`LD1` / `LD2`).
+  * Horizontal bar layout matching PCA, with blue positive and pink negative coefficients.
+  * Labeled explicitly as linear discriminant scaling coefficients (not percentages).
+
+---
+
+### 4. Tab 3 — Overview (Dynamic & Method-Aware)
+* **Latest Completed Run Synchronization**:
+  * Displays metrics, transformation summaries, and coordinates strictly corresponding to the **latest successfully completed analysis run**.
+  * If the user selects a different method or alters features in the Analysis tab without clicking *Run Analysis*, Overview preserves the completed run's data and displays a warning notification indicating a run is pending.
+  * In the event of an invalid or failed run, previous successful metrics and labels are preserved.
+* **Dynamic Summary Cards**:
+  * **Active Method**: Method name (PCA / LDA), coordinate transformation description, and Z-score standardization badge.
+  * **Dataset Information**: Dataset name, total observation count, feature count, and cultivar class count.
+  * **Method-Specific Metric Card**:
+    * **PCA Completed**: Displays **PCA Variance Explained (2D)** (e.g. `57.12% Total Variance`, `PC1: 37.00% • PC2: 20.12%`, with `Unsupervised Eigen-Projection` badge).
+    * **LDA Completed**: Displays **LDA Discriminant Trace (2D)** (e.g. `100.00% Between-Class Trace`, `LD1: 70.29% • LD2: 29.71%`, with `Supervised Fisher Criterion` badge).
+  * **Train / Test Split**: 70:30 Train-Test split breakdown (125 Train / 53 Test) with seed 42 zero-leakage indicator.
+* **Transformed Dataset Preview & Export (Method-Specific)**:
+  * Dynamic preview table displaying the first 10 observations with method-specific coordinate columns:
+    * `PC1` & `PC2` for completed PCA runs.
+    * `LD1` & `LD2` for completed LDA runs.
+  * Cultivar class tags and train/test partition badges.
+  * `Download CSV` button exporting all observations with method-specific naming (`pca_transformed_data_all_*.csv` or `lda_transformed_data_all_*.csv`).
 
 ---
 
@@ -86,7 +124,7 @@ Built with a minimal, modern white-and-sky-blue design system, the application o
 
 ```text
 PCA-LDA-Dimensionality-Reduction/
-├── app.R              # Complete R Shiny Feature Extraction Studio
+├── app.R              # Complete R Shiny Feature Extraction Studio (3-Tab Navigation)
 ├── run_app.R          # One-click startup script with automated dependency installer
 ├── validate_app.R     # Validation suite testing 70:30 split, standardization, and dynamic models
 ├── .gitignore         # Git ignore rules for R, RStudio, and Windows
