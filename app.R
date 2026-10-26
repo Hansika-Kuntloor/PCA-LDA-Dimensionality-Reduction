@@ -154,6 +154,8 @@ compute_feature_models <- function(selected_keys,
   # Out-of-sample LDA test classification accuracy
   lda_test_conf <- table(Predicted = lda_te_pred$class, Actual = te_data[[class_col]])
   lda_test_acc  <- (sum(diag(lda_test_conf)) / sum(lda_test_conf)) * 100
+  lda_test_correct <- sum(diag(lda_test_conf))
+  lda_test_total <- sum(lda_test_conf)
   
   list(
     selected_keys = selected_keys,
@@ -171,7 +173,9 @@ compute_feature_models <- function(selected_keys,
     lda_train_scores = lda_tr_scores,
     lda_test_scores = lda_te_scores,
     lda_scores_df = lda_all_scores,
-    lda_test_acc = lda_test_acc
+    lda_test_acc = lda_test_acc,
+    lda_test_correct = lda_test_correct,
+    lda_test_total = lda_test_total
   )
 }
 
@@ -229,24 +233,24 @@ ui <- fluidPage(
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 24px;
-        height: 52px;
-        max-width: 1680px;
+        padding: 0 32px;
+        height: 76px;
+        max-width: 1720px;
         margin: 0 auto;
       }
       .navbar-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 14px;
         flex-shrink: 0;
       }
       .brand-icon-svg {
-        width: 28px;
-        height: 28px;
+        width: 36px;
+        height: 36px;
         flex-shrink: 0;
       }
       .brand-title {
-        font-size: 16px;
+        font-size: 21px;
         font-weight: 700;
         color: #0F172A;
         letter-spacing: -0.3px;
@@ -259,7 +263,7 @@ ui <- fluidPage(
       }
       .studio-nav-pills {
         display: flex;
-        gap: 6px;
+        gap: 8px;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -268,12 +272,12 @@ ui <- fluidPage(
       .studio-nav-pills > li > a {
         display: inline-flex;
         align-items: center;
-        padding: 7px 18px;
-        font-size: 13.5px;
+        padding: 10px 24px;
+        font-size: 16.5px;
         font-weight: 600;
         color: #475569;
         text-decoration: none !important;
-        border-radius: 6px;
+        border-radius: 8px;
         transition: all 0.15s ease;
         position: relative;
         cursor: pointer;
@@ -298,13 +302,13 @@ ui <- fluidPage(
       .header-dataset-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         background: #EFF4FF;
         border: 1px solid #C7D7FE;
         color: #315DEB;
-        padding: 4px 10px;
-        border-radius: 16px;
-        font-size: 11.5px;
+        padding: 7px 16px;
+        border-radius: 20px;
+        font-size: 13px;
         font-weight: 600;
         white-space: nowrap;
       }
@@ -313,8 +317,8 @@ ui <- fluidPage(
       .studio-container {
         position: relative;
         z-index: 5;
-        padding: 16px 24px 32px 24px;
-        max-width: 1640px;
+        padding: 20px 32px 36px 32px;
+        max-width: 1720px;
         margin: 0 auto;
       }
       
@@ -322,9 +326,9 @@ ui <- fluidPage(
       .studio-card {
         background: #FFFFFF;
         border: 1px solid #E5E7EB;
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin-bottom: 14px;
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
       }
       
@@ -333,52 +337,57 @@ ui <- fluidPage(
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
-        min-height: 38px;
+        margin-bottom: 14px;
+        min-height: 40px;
       }
       .card-title-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex: 1;
         min-width: 0;
       }
       .card-icon {
         color: #315DEB;
-        font-size: 16px;
+        font-size: 18px;
       }
       .card-main-title {
-        font-size: 15px;
+        font-size: 16.5px;
         font-weight: 700;
         color: #0F172A;
         margin: 0;
         line-height: 1.3;
       }
       .card-subtitle {
-        font-size: 12px;
+        font-size: 12.5px;
         color: #64748B;
         margin: 2px 0 0 0;
-        line-height: 1.3;
+        line-height: 1.35;
       }
       .card-header-select {
-        margin-left: 10px;
+        margin-left: 12px;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
       }
       .card-header-select .form-group,
-      .card-header-select .shiny-input-container {
+      .card-header-select .shiny-input-container,
+      .card-header-select .selectize-control {
         margin-bottom: 0 !important;
       }
       .card-header-select select.form-control,
       .card-header-select .selectize-input {
-        height: 32px !important;
-        min-height: 32px !important;
-        padding: 4px 8px !important;
-        font-size: 12px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        padding: 6px 12px !important;
+        font-size: 13px !important;
         font-weight: 600 !important;
         border-radius: 6px !important;
         border-color: #CBD5E1 !important;
         color: #0F172A !important;
         line-height: 1.4 !important;
+        display: flex !important;
+        align-items: center !important;
       }
       
       /* Segmented Method Selector */
@@ -594,30 +603,51 @@ ui <- fluidPage(
         background: #FAFAFC;
         border: 1px solid #E5E7EB;
         border-radius: 8px;
-        padding: 6px 10px;
-        margin-bottom: 10px;
+        padding: 8px 10px;
+        margin-bottom: 12px;
+      }
+      .standardize-box .form-group {
+        margin: 0 !important;
+        margin-bottom: 0 !important;
       }
       .standardize-box .checkbox {
+        position: relative !important;
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
+        min-height: auto !important;
       }
       .standardize-box .checkbox label {
         display: flex !important;
         align-items: center !important;
-        font-size: 12px !important;
+        padding: 0 !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
+        min-height: auto !important;
+        font-size: 12.5px !important;
         font-weight: 600 !important;
         color: #0F172A !important;
-        margin: 0 !important;
         cursor: pointer !important;
+        line-height: 1.35 !important;
+        user-select: none;
       }
       .standardize-box .checkbox input[type='checkbox'] {
-        margin: 0 6px 0 0 !important;
+        position: static !important;
+        float: none !important;
+        margin: 0 8px 0 0 !important;
+        width: 15px !important;
+        height: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+        flex-shrink: 0 !important;
         accent-color: #315DEB !important;
+        cursor: pointer !important;
+        vertical-align: middle;
       }
       .standardize-help {
-        font-size: 10.5px;
+        font-size: 11px;
         color: #64748B;
-        margin: 2px 0 0 20px;
+        margin: 4px 0 0 23px;
         line-height: 1.35;
       }
       
@@ -626,32 +656,32 @@ ui <- fluidPage(
         background: #FAFAFC;
         border: 1px solid #E5E7EB;
         border-radius: 8px;
-        padding: 7px 10px;
-        margin-bottom: 10px;
+        padding: 8px 10px;
+        margin-bottom: 12px;
       }
       .split-block-header {
         display: flex;
         align-items: center;
-        gap: 5px;
-        margin-bottom: 3px;
+        gap: 6px;
+        margin-bottom: 4px;
       }
       .split-title {
-        font-size: 12px;
+        font-size: 12.5px;
         font-weight: 700;
         color: #0F172A;
       }
       .split-pct-text {
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 600;
         color: #315DEB;
-        margin-bottom: 4px;
+        margin-bottom: 5px;
       }
       .split-bar-container {
-        height: 5px;
+        height: 6px;
         display: flex;
         border-radius: 3px;
         overflow: hidden;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         background: #E2E8F0;
       }
       .split-bar-train {
@@ -663,29 +693,52 @@ ui <- fluidPage(
         background: #94A3B8;
       }
       .split-detail-text {
-        font-size: 10.5px;
+        font-size: 11px;
         color: #64748B;
+        margin-bottom: 6px;
       }
       .split-toggle-box {
         margin-top: 6px;
-        padding-top: 6px;
+        padding-top: 7px;
         border-top: 1px dashed #E2E8F0;
       }
+      .split-toggle-box .form-group {
+        margin: 0 !important;
+        margin-bottom: 0 !important;
+      }
       .split-toggle-box .checkbox {
+        position: relative !important;
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
+        min-height: auto !important;
       }
       .split-toggle-box .checkbox label {
-        font-size: 10.5px !important;
-        color: #475569 !important;
-        margin: 0 !important;
-        cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
+        padding: 0 !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
+        min-height: auto !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
+        cursor: pointer !important;
+        line-height: 1.35 !important;
+        user-select: none;
       }
       .split-toggle-box .checkbox input[type='checkbox'] {
-        margin: 0 5px 0 0 !important;
+        position: static !important;
+        float: none !important;
+        margin: 0 8px 0 0 !important;
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        max-width: 14px !important;
+        flex-shrink: 0 !important;
         accent-color: #315DEB !important;
+        cursor: pointer !important;
+        vertical-align: middle;
       }
       
       /* Primary Run Button */
@@ -714,42 +767,35 @@ ui <- fluidPage(
       
       /* RESTORED CLEAN FEATURE CONTRIBUTION CHART STYLING */
       .feature-contrib-list {
-        padding: 2px 0;
-        max-height: 365px;
-        overflow-y: auto;
-      }
-      .feature-contrib-list::-webkit-scrollbar {
-        width: 5px;
-      }
-      .feature-contrib-list::-webkit-scrollbar-thumb {
-        background: #CBD5E1;
-        border-radius: 4px;
+        padding: 4px 6px 4px 0;
+        margin-top: 6px;
       }
       .feature-contrib-row {
         display: flex;
         align-items: center;
-        height: 22px;
-        min-height: 22px;
-        gap: 10px;
-        margin-bottom: 5px;
+        height: 26px;
+        min-height: 26px;
+        gap: 12px;
+        margin-bottom: 6px;
+        padding-right: 6px;
       }
       .contrib-name {
-        width: 140px;
-        min-width: 140px;
-        max-width: 140px;
+        width: 155px;
+        min-width: 155px;
+        max-width: 155px;
         flex-shrink: 0;
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 12.5px;
+        font-weight: 600;
         color: #1E293B;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        line-height: 22px;
+        line-height: 26px;
       }
       .contrib-bar-track {
         flex: 1 1 auto;
-        min-width: 50px;
-        height: 9px;
+        min-width: 60px;
+        height: 10px;
         background: #F1F5F9;
         border-radius: 5px;
         overflow: hidden;
@@ -760,21 +806,22 @@ ui <- fluidPage(
         transition: width 0.25s ease;
       }
       .contrib-val {
-        width: 54px;
-        min-width: 54px;
-        max-width: 54px;
+        width: 64px;
+        min-width: 64px;
+        max-width: 64px;
         flex-shrink: 0;
-        font-size: 12px;
+        font-size: 12.5px;
         font-weight: 700;
         text-align: right;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        line-height: 22px;
+        line-height: 26px;
         font-variant-numeric: tabular-nums;
+        margin-right: 4px;
       }
       
       /* Table Scroll Wrap & Clean Styling */
       .table-scroll-wrap {
-        max-height: 295px;
+        max-height: 420px;
         overflow-y: auto;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
@@ -799,8 +846,8 @@ ui <- fluidPage(
       @media (min-width: 992px) {
         .insights-three-col {
           display: grid !important;
-          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-          gap: 16px !important;
+          grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.14fr) minmax(0, 1.05fr) !important;
+          gap: 18px !important;
           margin-left: 0 !important;
           margin-right: 0 !important;
           align-items: start !important;
@@ -818,9 +865,10 @@ ui <- fluidPage(
           flex-direction: column !important;
         }
         .insights-three-col .studio-card {
-          flex: 1 1 auto !important;
+          width: 100% !important;
           margin-bottom: 0 !important;
-          min-height: 480px;
+          min-height: auto !important;
+          height: auto !important;
         }
       }
       @media (max-width: 991px) {
@@ -859,10 +907,10 @@ ui <- fluidPage(
         background: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
-        padding: 7px 10px;
+        padding: 8px 12px;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
       }
       .metric-chip-full {
         grid-column: span 2;
@@ -875,7 +923,7 @@ ui <- fluidPage(
         border-color: #C7D7FE;
       }
       .metric-chip-label {
-        font-size: 11px;
+        font-size: 11.5px;
         font-weight: 600;
         color: #64748B;
       }
@@ -883,7 +931,7 @@ ui <- fluidPage(
         color: #315DEB;
       }
       .metric-chip-val {
-        font-size: 15.5px;
+        font-size: 16.5px;
         font-weight: 700;
         color: #0F172A;
       }
@@ -898,7 +946,7 @@ ui <- fluidPage(
         border-radius: 8px;
         padding: 12px 14px;
         margin-top: 10px;
-        font-size: 12px;
+        font-size: 12.5px;
         color: #334155;
         line-height: 1.45;
       }
@@ -911,7 +959,7 @@ ui <- fluidPage(
         background: #FFFFFF;
         border: 1px solid #E5E7EB;
         border-radius: 10px;
-        padding: 16px 18px;
+        padding: 18px 20px;
         height: 100%;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
         display: flex;
@@ -919,7 +967,7 @@ ui <- fluidPage(
         justify-content: space-between;
       }
       .overview-card-label {
-        font-size: 11px;
+        font-size: 11.5px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -927,22 +975,22 @@ ui <- fluidPage(
         margin-bottom: 6px;
       }
       .overview-card-val {
-        font-size: 18px;
+        font-size: 19px;
         font-weight: 700;
         color: #0F172A;
         margin-bottom: 4px;
       }
       .overview-card-desc {
-        font-size: 11.5px;
+        font-size: 12px;
         color: #64748B;
-        line-height: 1.4;
+        line-height: 1.45;
         margin-bottom: 8px;
       }
       .overview-card-badge {
         display: inline-block;
-        padding: 3px 8px;
+        padding: 3.5px 9px;
         border-radius: 12px;
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 600;
         background: #EFF4FF;
         color: #315DEB;
@@ -1285,7 +1333,7 @@ ui <- fluidPage(
                       p(class = "card-subtitle", "Eigenvector loadings for selected component")
                     )
                   ),
-                  div(class = "card-header-select", style = "width: 100px;",
+                  div(class = "card-header-select", style = "width: 105px;",
                     selectInput("pca_contrib_comp", label = NULL, choices = paste0("PC", 1:13), selected = "PC1")
                   )
                 ),
@@ -1309,7 +1357,7 @@ ui <- fluidPage(
                   ),
                   downloadButton("download_scree_png", "Save PNG", class = "btn-export")
                 ),
-                plotOutput("plot_scree", height = "360px")
+                plotOutput("plot_scree", height = "380px")
               )
             )
           )
@@ -1347,7 +1395,7 @@ ui <- fluidPage(
                       p(class = "card-subtitle", "Linear discriminant scaling coefficients")
                     )
                   ),
-                  div(class = "card-header-select", style = "width: 100px;",
+                  div(class = "card-header-select", style = "width: 105px;",
                     selectInput("lda_contrib_comp", label = NULL, choices = c("LD1" = "LD1", "LD2" = "LD2"), selected = "LD1")
                   )
                 ),
@@ -1371,7 +1419,7 @@ ui <- fluidPage(
                   ),
                   downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
                 ),
-                plotOutput("plot_lda_variance", height = "240px"),
+                plotOutput("plot_lda_variance", height = "280px"),
                 div(class = "insights-context-box", style = "margin-top: 12px;",
                   strong("Fisher's Criterion: "),
                   "LDA maximizes between-to-within class variance (SB / SW). With 3 distinct cultivars, LDA generates min(p, 3 - 1) = 2 discriminant functions (LD1 and LD2), capturing 100% of between-class separation."
@@ -1787,25 +1835,29 @@ server <- function(input, output, session) {
   # ----------------------------------------------------------------------------
   # SHARED ELEGANT ACADEMIC GGPLOT THEME
   # ----------------------------------------------------------------------------
-  theme_studio <- function(base_size = 12) {
+  theme_studio <- function(base_size = 12.5) {
     theme_minimal(base_size = base_size) +
       theme(
         plot.background       = element_rect(fill = "#FFFFFF", color = NA),
         panel.background      = element_rect(fill = "#FFFFFF", color = NA),
         panel.grid.minor      = element_blank(),
         panel.grid.major      = element_line(color = "#F1F5F9", linewidth = 0.5),
-        axis.title.x          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(t = 6)),
-        axis.title.y          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(r = 6)),
-        axis.text             = element_text(color = "#64748B", size = base_size - 1.5),
+        axis.title.x          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(t = 8)),
+        axis.title.y          = element_text(face = "bold", color = "#0F172A", size = base_size, margin = margin(r = 8)),
+        axis.text             = element_text(color = "#475569", size = base_size - 1.5),
         legend.position       = "top",
+        legend.box            = "horizontal",
+        legend.box.just       = "center",
         legend.justification  = "center",
-        legend.title          = element_text(face = "bold", color = "#0F172A", size = base_size - 1.5),
-        legend.text           = element_text(color = "#334155", size = base_size - 1.5),
+        legend.title          = element_text(face = "bold", color = "#0F172A", size = base_size - 1),
+        legend.text           = element_text(color = "#334155", size = base_size - 1),
         legend.key            = element_blank(),
         legend.background     = element_blank(),
         legend.box.background = element_blank(),
         legend.margin         = margin(0, 0, 4, 0),
-        plot.margin           = margin(6, 12, 6, 12)
+        legend.box.margin     = margin(0, 0, 4, 0),
+        legend.spacing.x      = unit(10, "pt"),
+        plot.margin           = margin(8, 14, 8, 14)
       )
   }
   
@@ -1841,18 +1893,36 @@ server <- function(input, output, session) {
         stat_ellipse(geom = "polygon", aes(fill = Cultivar), alpha = 0.08, level = 0.95, show.legend = FALSE, color = NA)
       
       if (distinguish) {
-        p <- p + geom_point(aes(fill = Cultivar, shape = Split), size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
-          scale_shape_manual(name = "Partition:", values = c("Training (70%)" = 21, "Testing (30%)" = 24))
+        p <- p +
+          geom_point(aes(fill = Cultivar, shape = Split), size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_shape_manual(name = "Partition (Shape):", values = c("Training (70%)" = 21, "Testing (30%)" = 24)) +
+          scale_fill_manual(name = "Wine Class (Color):", values = pal) +
+          guides(
+            fill = guide_legend(
+              order = 1,
+              nrow = 1,
+              override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            ),
+            shape = guide_legend(
+              order = 2,
+              nrow = 1,
+              override.aes = list(fill = "#475569", size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            )
+          )
       } else {
-        p <- p + geom_point(aes(fill = Cultivar), shape = 21, size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88)
+        p <- p +
+          geom_point(aes(fill = Cultivar), shape = 21, size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_fill_manual(name = "Wine Class:", values = pal) +
+          guides(
+            fill = guide_legend(
+              nrow = 1,
+              override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            )
+          )
       }
       
       p <- p +
-        scale_fill_manual(name = "Wine Class:", values = pal) +
-        guides(
-          fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
-        ) +
-        theme_studio(base_size = 12) +
+        theme_studio(base_size = 12.5) +
         labs(
           x = sprintf("PC1 (%.2f%% Explained Variance)", pct1),
           y = sprintf("PC2 (%.2f%% Explained Variance)", pct2)
@@ -1866,14 +1936,41 @@ server <- function(input, output, session) {
         pct1 <- if (length(res$lda_trace_pct) >= 1) res$lda_trace_pct[1] else 100
         p <- ggplot(df, aes(x = LD1, y = 0)) +
           geom_hline(yintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
-          geom_vline(xintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5) +
-          geom_point(aes(fill = Cultivar), shape = 21, size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88,
-                     position = position_jitter(height = 0.05, seed = 42)) +
-          scale_fill_manual(name = "Wine Class:", values = pal) +
-          guides(
-            fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
-          ) +
-          theme_studio(base_size = 12) +
+          geom_vline(xintercept = 0, linetype = "dashed", color = "#E2E8F0", linewidth = 0.5)
+        
+        if (distinguish) {
+          p <- p +
+            geom_point(aes(fill = Cultivar, shape = Split), size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88,
+                       position = position_jitter(height = 0.05, seed = 42)) +
+            scale_shape_manual(name = "Partition (Shape):", values = c("Training (70%)" = 21, "Testing (30%)" = 24)) +
+            scale_fill_manual(name = "Wine Class (Color):", values = pal) +
+            guides(
+              fill = guide_legend(
+                order = 1,
+                nrow = 1,
+                override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+              ),
+              shape = guide_legend(
+                order = 2,
+                nrow = 1,
+                override.aes = list(fill = "#475569", size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+              )
+            )
+        } else {
+          p <- p +
+            geom_point(aes(fill = Cultivar), shape = 21, size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88,
+                       position = position_jitter(height = 0.05, seed = 42)) +
+            scale_fill_manual(name = "Wine Class:", values = pal) +
+            guides(
+              fill = guide_legend(
+                nrow = 1,
+                override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+              )
+            )
+        }
+        
+        p <- p +
+          theme_studio(base_size = 12.5) +
           theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
           labs(
             x = sprintf("LD1 (%.2f%% Between-Class Trace)", pct1),
@@ -1891,18 +1988,36 @@ server <- function(input, output, session) {
         stat_ellipse(geom = "polygon", aes(fill = Cultivar), alpha = 0.08, level = 0.95, show.legend = FALSE, color = NA)
       
       if (distinguish) {
-        p <- p + geom_point(aes(fill = Cultivar, shape = Split), size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
-          scale_shape_manual(name = "Partition:", values = c("Training (70%)" = 21, "Testing (30%)" = 24))
+        p <- p +
+          geom_point(aes(fill = Cultivar, shape = Split), size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_shape_manual(name = "Partition (Shape):", values = c("Training (70%)" = 21, "Testing (30%)" = 24)) +
+          scale_fill_manual(name = "Wine Class (Color):", values = pal) +
+          guides(
+            fill = guide_legend(
+              order = 1,
+              nrow = 1,
+              override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            ),
+            shape = guide_legend(
+              order = 2,
+              nrow = 1,
+              override.aes = list(fill = "#475569", size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            )
+          )
       } else {
-        p <- p + geom_point(aes(fill = Cultivar), shape = 21, size = 3.2, stroke = 0.6, color = "#FFFFFF", alpha = 0.88)
+        p <- p +
+          geom_point(aes(fill = Cultivar), shape = 21, size = 3.4, stroke = 0.6, color = "#FFFFFF", alpha = 0.88) +
+          scale_fill_manual(name = "Wine Class:", values = pal) +
+          guides(
+            fill = guide_legend(
+              nrow = 1,
+              override.aes = list(shape = 21, size = 3.8, stroke = 0.6, color = "#FFFFFF", alpha = 1)
+            )
+          )
       }
       
       p <- p +
-        scale_fill_manual(name = "Wine Class:", values = pal) +
-        guides(
-          fill = guide_legend(override.aes = list(shape = 21, size = 3.6, stroke = 0.6, color = "#FFFFFF", alpha = 1))
-        ) +
-        theme_studio(base_size = 12) +
+        theme_studio(base_size = 12.5) +
         labs(
           x = sprintf("LD1 (%.2f%% Between-Class Trace)", pct1),
           y = sprintf("LD2 (%.2f%% Between-Class Trace)", pct2)
@@ -1990,22 +2105,22 @@ server <- function(input, output, session) {
     if (y_max < 25) y_max <- 25
     
     ggplot(scree_df, aes(x = Component, y = Pct)) +
-      geom_col(fill = "#315DEB", width = 0.56, alpha = 0.95) +
-      geom_text(aes(label = Label), vjust = -0.6, size = 3.5, fontface = "bold", color = "#0F172A") +
+      geom_col(fill = "#315DEB", width = 0.58, alpha = 0.95) +
+      geom_text(aes(label = Label), vjust = -0.7, size = 3.6, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         labels = function(x) paste0(x, "%"),
         expand = expansion(mult = c(0, 0.08))
       ) +
       coord_cartesian(clip = "off") +
-      theme_studio(base_size = 12) +
+      theme_studio(base_size = 12.5) +
       theme(
         panel.grid.major.x = element_blank(),
-        axis.text.x = element_text(angle = 35, hjust = 1, vjust = 1, size = 10, face = "bold", color = "#475569"),
-        axis.text.y = element_text(size = 10.5, color = "#475569"),
-        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 8)),
-        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 8)),
-        plot.margin = margin(14, 14, 8, 12)
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 1, size = 10, face = "bold", color = "#475569"),
+        axis.text.y = element_text(size = 11, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(t = 10)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(r = 10)),
+        plot.margin = margin(16, 16, 10, 16)
       ) +
       labs(x = "Principal Component", y = "Explained Variance (%)")
   }
@@ -2121,7 +2236,8 @@ server <- function(input, output, session) {
       ),
       div(class = "insights-context-box", style = "margin-top: 10px;",
         strong("Held-Out Test Accuracy: "),
-        sprintf("%.2f%% (52 of 53 test observations correctly classified with zero data leakage).", res$lda_test_acc)
+        sprintf("%.2f%% (%d of %d test observations correctly classified with zero data leakage).", 
+                res$lda_test_acc, res$lda_test_correct, res$lda_test_total)
       )
     )
   })
@@ -2156,7 +2272,7 @@ server <- function(input, output, session) {
     
     ggplot(lda_df, aes(x = Discriminant, y = TracePct)) +
       geom_col(fill = "#315DEB", width = 0.45, alpha = 0.95) +
-      geom_text(aes(label = Label), vjust = -0.6, size = 3.8, fontface = "bold", color = "#0F172A") +
+      geom_text(aes(label = Label), vjust = -0.7, size = 4.0, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         breaks = seq(0, 100, 20),
@@ -2164,14 +2280,14 @@ server <- function(input, output, session) {
         expand = expansion(mult = c(0, 0.08))
       ) +
       coord_cartesian(clip = "off") +
-      theme_studio(base_size = 12) +
+      theme_studio(base_size = 12.5) +
       theme(
         panel.grid.major.x = element_blank(),
-        axis.text.x = element_text(size = 11, face = "bold", color = "#0F172A"),
-        axis.text.y = element_text(size = 10.5, color = "#475569"),
-        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 8)),
-        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 8)),
-        plot.margin = margin(14, 14, 8, 12)
+        axis.text.x = element_text(size = 12, face = "bold", color = "#0F172A"),
+        axis.text.y = element_text(size = 11, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(t = 10)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(r = 12)),
+        plot.margin = margin(16, 16, 10, 24)
       ) +
       labs(
         x = "Linear Discriminant Function",
@@ -2343,8 +2459,13 @@ server <- function(input, output, session) {
   
   # Card 4: Partition
   output$overview_split_desc <- renderText({
-    sprintf("%d Training (70.2%%) • %d Testing (29.8%%)",
-            nrow(dataset_state$train), nrow(dataset_state$test))
+    n_tr <- nrow(dataset_state$train)
+    n_te <- nrow(dataset_state$test)
+    n_tot <- n_tr + n_te
+    pct_tr <- if (n_tot > 0) (n_tr / n_tot) * 100 else 70.2
+    pct_te <- if (n_tot > 0) (n_te / n_tot) * 100 else 29.8
+    sprintf("%d Training (%.1f%%) • %d Testing (%.1f%%)",
+            n_tr, pct_tr, n_te, pct_te)
   })
   
   # Bottom Table: Transformed Data Preview (Method-Aware)
