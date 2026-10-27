@@ -175,7 +175,8 @@ compute_feature_models <- function(selected_keys,
     lda_scores_df = lda_all_scores,
     lda_test_acc = lda_test_acc,
     lda_test_correct = lda_test_correct,
-    lda_test_total = lda_test_total
+    lda_test_total = lda_test_total,
+    lda_test_conf = lda_test_conf
   )
 }
 
@@ -369,6 +370,7 @@ ui <- fluidPage(
         flex-shrink: 0;
         display: flex;
         align-items: center;
+        align-self: center;
       }
       .card-header-select .form-group,
       .card-header-select .shiny-input-container,
@@ -377,17 +379,18 @@ ui <- fluidPage(
       }
       .card-header-select select.form-control,
       .card-header-select .selectize-input {
-        height: 36px !important;
-        min-height: 36px !important;
-        padding: 6px 12px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        padding: 5px 10px !important;
         font-size: 13px !important;
         font-weight: 600 !important;
         border-radius: 6px !important;
-        border-color: #CBD5E1 !important;
+        border: 1px solid #CBD5E1 !important;
         color: #0F172A !important;
         line-height: 1.4 !important;
         display: flex !important;
         align-items: center !important;
+        background: #FFFFFF !important;
       }
       
       /* Segmented Method Selector */
@@ -767,7 +770,7 @@ ui <- fluidPage(
       
       /* RESTORED CLEAN FEATURE CONTRIBUTION CHART STYLING */
       .feature-contrib-list {
-        padding: 4px 6px 4px 0;
+        padding: 4px 4px 4px 0;
         margin-top: 6px;
       }
       .feature-contrib-row {
@@ -775,16 +778,16 @@ ui <- fluidPage(
         align-items: center;
         height: 26px;
         min-height: 26px;
-        gap: 12px;
+        gap: 10px;
         margin-bottom: 6px;
-        padding-right: 6px;
+        padding-right: 4px;
       }
       .contrib-name {
-        width: 155px;
-        min-width: 155px;
-        max-width: 155px;
+        width: 135px;
+        min-width: 110px;
+        max-width: 140px;
         flex-shrink: 0;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 600;
         color: #1E293B;
         white-space: nowrap;
@@ -794,7 +797,7 @@ ui <- fluidPage(
       }
       .contrib-bar-track {
         flex: 1 1 auto;
-        min-width: 60px;
+        min-width: 45px;
         height: 10px;
         background: #F1F5F9;
         border-radius: 5px;
@@ -806,22 +809,22 @@ ui <- fluidPage(
         transition: width 0.25s ease;
       }
       .contrib-val {
-        width: 64px;
-        min-width: 64px;
-        max-width: 64px;
+        width: 58px;
+        min-width: 58px;
+        max-width: 58px;
         flex-shrink: 0;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 700;
         text-align: right;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         line-height: 26px;
         font-variant-numeric: tabular-nums;
-        margin-right: 4px;
+        margin-right: 2px;
       }
       
       /* Table Scroll Wrap & Clean Styling */
       .table-scroll-wrap {
-        max-height: 420px;
+        max-height: 295px;
         overflow-y: auto;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
@@ -833,6 +836,11 @@ ui <- fluidPage(
       .table-scroll-wrap::-webkit-scrollbar-thumb {
         background: #CBD5E1;
         border-radius: 4px;
+      }
+      .clean-table th.num-col,
+      .clean-table td.num-col {
+        text-align: right !important;
+        font-variant-numeric: tabular-nums;
       }
       .table-scroll-wrap .clean-table th {
         position: sticky;
@@ -846,8 +854,8 @@ ui <- fluidPage(
       @media (min-width: 992px) {
         .insights-three-col {
           display: grid !important;
-          grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.14fr) minmax(0, 1.05fr) !important;
-          gap: 18px !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 20px !important;
           margin-left: 0 !important;
           margin-right: 0 !important;
           align-items: start !important;
@@ -875,7 +883,7 @@ ui <- fluidPage(
         .insights-three-col {
           display: flex !important;
           flex-direction: column !important;
-          gap: 16px !important;
+          gap: 20px !important;
           margin-left: 0 !important;
           margin-right: 0 !important;
         }
@@ -900,23 +908,29 @@ ui <- fluidPage(
       .metric-chips-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 10px;
         margin-bottom: 12px;
       }
       .metric-chip {
         background: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
-        padding: 8px 12px;
+        padding: 9px 12px;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         gap: 3px;
+        min-width: 0;
+        box-sizing: border-box;
       }
       .metric-chip-full {
         grid-column: span 2;
         flex-direction: row !important;
         justify-content: space-between !important;
         align-items: center !important;
+        padding: 10px 14px;
+        min-height: 48px;
+        gap: 8px;
       }
       .metric-chip-primary {
         background: #EFF4FF;
@@ -926,17 +940,92 @@ ui <- fluidPage(
         font-size: 11.5px;
         font-weight: 600;
         color: #64748B;
+        white-space: nowrap;
       }
       .metric-chip-primary .metric-chip-label {
         color: #315DEB;
+        font-weight: 700;
       }
       .metric-chip-val {
-        font-size: 16.5px;
+        font-size: 17px;
         font-weight: 700;
         color: #0F172A;
+        white-space: nowrap;
       }
       .metric-chip-primary .metric-chip-val {
         color: #315DEB;
+        font-size: 15.5px;
+      }
+      
+      /* Held-Out Test Accuracy Callout Box */
+      .test-accuracy-callout {
+        background: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        border-radius: 8px;
+        padding: 13px 15px;
+        margin-top: 14px;
+      }
+      .test-accuracy-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .test-accuracy-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #DCFCE7;
+        color: #15803D;
+        border-radius: 4px;
+        padding: 2px 7px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+      .test-accuracy-val {
+        font-size: 20px;
+        font-weight: 800;
+        color: #16A34A;
+        line-height: 1.1;
+      }
+      .test-accuracy-desc {
+        font-size: 11.5px;
+        color: #334155;
+        line-height: 1.35;
+        margin: 4px 0 10px 0;
+      }
+      .accuracy-breakdown-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        padding-top: 8px;
+        border-top: 1px dashed #BBF7D0;
+      }
+      .accuracy-breakdown-chip {
+        background: #FFFFFF;
+        border: 1px solid #DCFCE7;
+        border-radius: 6px;
+        padding: 5px 6px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .breakdown-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #475569;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .breakdown-val {
+        font-size: 12px;
+        font-weight: 700;
+        color: #15803D;
+        font-variant-numeric: tabular-nums;
       }
       
       /* Context Info Box */
@@ -944,14 +1033,40 @@ ui <- fluidPage(
         background: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 8px;
-        padding: 12px 14px;
-        margin-top: 10px;
+        padding: 13px 15px;
+        margin-top: 14px;
         font-size: 12.5px;
         color: #334155;
         line-height: 1.45;
       }
       .insights-context-box strong {
         color: #0F172A;
+      }
+      .context-box-title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .context-box-body {
+        font-size: 11.5px;
+        color: #475569;
+        line-height: 1.45;
+        margin: 0 0 8px 0;
+      }
+      .context-box-badge {
+        font-size: 11px;
+        font-weight: 600;
+        color: #315DEB;
+        background: #EFF4FF;
+        border: 1px solid #C7D7FE;
+        border-radius: 5px;
+        padding: 4px 8px;
+        display: inline-block;
+        line-height: 1.35;
       }
       
       /* Overview Cards */
@@ -1357,7 +1472,7 @@ ui <- fluidPage(
                   ),
                   downloadButton("download_scree_png", "Save PNG", class = "btn-export")
                 ),
-                plotOutput("plot_scree", height = "380px")
+                plotOutput("plot_scree", height = "390px")
               )
             )
           )
@@ -1419,10 +1534,18 @@ ui <- fluidPage(
                   ),
                   downloadButton("download_lda_variance_png", "Save PNG", class = "btn-export")
                 ),
-                plotOutput("plot_lda_variance", height = "280px"),
-                div(class = "insights-context-box", style = "margin-top: 12px;",
-                  strong("Fisher's Criterion: "),
-                  "LDA maximizes between-to-within class variance (SB / SW). With 3 distinct cultivars, LDA generates min(p, 3 - 1) = 2 discriminant functions (LD1 and LD2), capturing 100% of between-class separation."
+                plotOutput("plot_lda_variance", height = "310px"),
+                div(class = "insights-context-box", style = "margin-top: 14px;",
+                  div(class = "context-box-title",
+                    span(class = "card-icon", style = "font-size: 15px;", HTML("⚖")),
+                    span("Fisher's Criterion & Discriminant Space")
+                  ),
+                  p(class = "context-box-body",
+                    "LDA maximizes between-to-within class variance (SB / SW), concentrating cultivars into tight clusters while maximizing boundary separation."
+                  ),
+                  div(class = "context-box-badge",
+                    "Dimensionality Bound: min(p, 3 − 1) = 2 discriminant functions capture 100% of between-class variance."
+                  )
                 )
               )
             )
@@ -2067,8 +2190,8 @@ server <- function(input, output, session) {
     table_rows <- lapply(seq_len(n_comps), function(i) {
       tags$tr(
         tags$td(strong(paste0("PC", i))),
-        tags$td(sprintf("%.2f%%", var_pcts[i])),
-        tags$td(sprintf("%.2f%%", cum_pcts[i]))
+        tags$td(class = "num-col", sprintf("%.2f%%", var_pcts[i])),
+        tags$td(class = "num-col", sprintf("%.2f%%", cum_pcts[i]))
       )
     })
     
@@ -2077,8 +2200,8 @@ server <- function(input, output, session) {
         tags$thead(
           tags$tr(
             tags$th("Component"),
-            tags$th("Explained Variance"),
-            tags$th("Cumulative Variance")
+            tags$th(class = "num-col", "Explained Variance"),
+            tags$th(class = "num-col", "Cumulative Variance")
           )
         ),
         tags$tbody(table_rows)
@@ -2098,15 +2221,15 @@ server <- function(input, output, session) {
     scree_df <- data.frame(
       Component = comp_names,
       Pct = var_pcts,
-      Label = ifelse(seq_len(n_comps) <= min(4, n_comps), sprintf("%.1f%%", var_pcts), "")
+      Label = ifelse(seq_len(n_comps) <= min(3, n_comps), sprintf("%.1f%%", var_pcts), "")
     )
     
-    y_max <- min(100, max(var_pcts) * 1.30)
+    y_max <- min(100, max(var_pcts) * 1.25)
     if (y_max < 25) y_max <- 25
     
     ggplot(scree_df, aes(x = Component, y = Pct)) +
-      geom_col(fill = "#315DEB", width = 0.58, alpha = 0.95) +
-      geom_text(aes(label = Label), vjust = -0.7, size = 3.6, fontface = "bold", color = "#0F172A") +
+      geom_col(fill = "#315DEB", width = 0.60, alpha = 0.95) +
+      geom_text(aes(label = Label), vjust = -0.6, size = 3.6, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         labels = function(x) paste0(x, "%"),
@@ -2116,11 +2239,11 @@ server <- function(input, output, session) {
       theme_studio(base_size = 12.5) +
       theme(
         panel.grid.major.x = element_blank(),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 1, size = 10, face = "bold", color = "#475569"),
-        axis.text.y = element_text(size = 11, color = "#475569"),
-        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(t = 10)),
-        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(r = 10)),
-        plot.margin = margin(16, 16, 10, 16)
+        axis.text.x = element_text(angle = 35, hjust = 1, vjust = 1, size = 10, face = "bold", color = "#475569"),
+        axis.text.y = element_text(size = 10.5, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 8)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 10)),
+        plot.margin = margin(16, 16, 12, 16)
       ) +
       labs(x = "Principal Component", y = "Explained Variance (%)")
   }
@@ -2216,28 +2339,50 @@ server <- function(input, output, session) {
     table_rows <- lapply(seq_len(n_disc), function(i) {
       tags$tr(
         tags$td(strong(paste0("LD", i))),
-        tags$td(sprintf("%.2f%%", trace_pcts[i])),
-        tags$td(sprintf("%.2f%%", cum_trace[i]))
+        tags$td(class = "num-col", sprintf("%.2f%%", trace_pcts[i])),
+        tags$td(class = "num-col", sprintf("%.2f%%", cum_trace[i]))
       )
     })
     
+    breakdown_nodes <- NULL
+    if (!is.null(res$lda_test_conf)) {
+      conf <- res$lda_test_conf
+      cult_names <- colnames(conf)
+      chip_nodes <- lapply(cult_names, function(cn) {
+        corr <- if (cn %in% rownames(conf)) conf[cn, cn] else 0
+        tot <- sum(conf[, cn])
+        pct <- if (tot > 0) (corr / tot) * 100 else 0
+        div(class = "accuracy-breakdown-chip",
+          span(class = "breakdown-label", cn),
+          span(class = "breakdown-val", sprintf("%.1f%% (%d/%d)", pct, corr, tot))
+        )
+      })
+      breakdown_nodes <- div(class = "accuracy-breakdown-grid", chip_nodes)
+    }
+    
     tagList(
-      tags$div(class = "table-scroll-wrap",
+      tags$div(class = "table-scroll-wrap", style = "max-height: 160px;",
         tags$table(class = "clean-table",
           tags$thead(
             tags$tr(
               tags$th("Discriminant"),
-              tags$th("Between-Class Trace"),
-              tags$th("Cumulative Trace")
+              tags$th(class = "num-col", "Between-Class Trace"),
+              tags$th(class = "num-col", "Cumulative Trace")
             )
           ),
           tags$tbody(table_rows)
         )
       ),
-      div(class = "insights-context-box", style = "margin-top: 10px;",
-        strong("Held-Out Test Accuracy: "),
-        sprintf("%.2f%% (%d of %d test observations correctly classified with zero data leakage).", 
-                res$lda_test_acc, res$lda_test_correct, res$lda_test_total)
+      div(class = "test-accuracy-callout",
+        div(class = "test-accuracy-header",
+          span(class = "test-accuracy-badge", HTML("✓ Held-Out Test")),
+          span(class = "test-accuracy-val", sprintf("%.2f%%", res$lda_test_acc))
+        ),
+        p(class = "test-accuracy-desc",
+          sprintf("%d of %d held-out test observations correctly classified (zero data leakage).", 
+                  res$lda_test_correct, res$lda_test_total)
+        ),
+        breakdown_nodes
       )
     )
   })
@@ -2271,8 +2416,8 @@ server <- function(input, output, session) {
     if (y_max < 30) y_max <- 30
     
     ggplot(lda_df, aes(x = Discriminant, y = TracePct)) +
-      geom_col(fill = "#315DEB", width = 0.45, alpha = 0.95) +
-      geom_text(aes(label = Label), vjust = -0.7, size = 4.0, fontface = "bold", color = "#0F172A") +
+      geom_col(fill = "#315DEB", width = 0.38, alpha = 0.95) +
+      geom_text(aes(label = Label), vjust = -0.7, size = 4.2, fontface = "bold", color = "#0F172A") +
       scale_y_continuous(
         limits = c(0, y_max),
         breaks = seq(0, 100, 20),
@@ -2284,10 +2429,10 @@ server <- function(input, output, session) {
       theme(
         panel.grid.major.x = element_blank(),
         axis.text.x = element_text(size = 12, face = "bold", color = "#0F172A"),
-        axis.text.y = element_text(size = 11, color = "#475569"),
-        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(t = 10)),
-        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12.5, margin = margin(r = 12)),
-        plot.margin = margin(16, 16, 10, 24)
+        axis.text.y = element_text(size = 10.5, color = "#475569"),
+        axis.title.x = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(t = 10)),
+        axis.title.y = element_text(face = "bold", color = "#0F172A", size = 12, margin = margin(r = 12)),
+        plot.margin = margin(16, 16, 12, 22)
       ) +
       labs(
         x = "Linear Discriminant Function",
